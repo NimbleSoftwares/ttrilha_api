@@ -1,3 +1,5 @@
 spring:
   application:
     name: ttrilha-api
+  config:
+    import: optional:file:.env[.properties]
