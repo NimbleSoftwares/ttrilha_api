@@ -1,0 +1,165 @@
+{
+  "info": {
+    "_postman_id": "17fc0b3d-7d8f-4225-ba74-89a1a0ec8e79",
+    "name": "TTrilha",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "52510243",
+    "_collection_link": "https://go.postman.co/collection/52510243-17fc0b3d-7d8f-4225-ba74-89a1a0ec8e79?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Login PKCE",
+      "request": {
+        "auth": {
+          "type": "oauth2",
+          "oauth2": [
+            {
+              "key": "accessTokenUrl",
+              "value": "{{domain}}/oauth/token",
+              "type": "string"
+            },
+            {
+              "key": "authUrl",
+              "value": "{{domain}}/authorize",
+              "type": "string"
+            },
+            {
+              "key": "authRequestParams",
+              "value": [
+                {
+                  "key": "audience",
+                  "value": "{{audience}}",
+                  "enabled": true,
+                  "send_as": "request_url"
+                },
+                {
+                  "key": "scope",
+                  "value": "openid name profile",
+                  "enabled": true,
+                  "send_as": "request_url"
+                }
+              ],
+              "type": "any"
+            },
+            {
+              "key": "tokenRequestParams",
+              "value": [
+                {
+                  "key": "audience",
+                  "value": "{{audience}}",
+                  "enabled": true,
+                  "send_as": "request_body"
+                }
+              ],
+              "type": "any"
+            },
+            {
+              "key": "scope",
+              "value": "openid profile email",
+              "type": "string"
+            },
+            {
+              "key": "client_authentication",
+              "value": "body",
+              "type": "string"
+            },
+            {
+              "key": "clientSecret",
+              "value": "VN8DX17qqWgzqcX7f-d_Id63l3GDaH5R68PsFiUkvnfqTaQUJBn7a-7l-I3ddGbt",
+              "type": "string"
+            },
+            {
+              "key": "clientId",
+              "value": "kC5Nq1S8Pb9LMIvv0bz9zSt8ZQNFz589",
+              "type": "string"
+            },
+            {
+              "key": "grant_type",
+              "value": "authorization_code_with_pkce",
+              "type": "string"
+            },
+            {
+              "key": "useBrowser",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "key": "tokenName",
+              "value": "Token TTrilha",
+              "type": "string"
+            },
+            {
+              "key": "addTokenTo",
+              "value": "header",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "test-jwt",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{accessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/test-jwt",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "test-jwt"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "User Info",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{accessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{domain}}/userinfo",
+          "host": [
+            "{{domain}}"
+          ],
+          "path": [
+            "userinfo"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
