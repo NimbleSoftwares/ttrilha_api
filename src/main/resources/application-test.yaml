@@ -1,11 +1,18 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password: ""
+    url: ${DB_URL}
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USER}
+    password: ${DB_PASS}
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
+    flyway:
+      locations: classpath:db/migration
+      enabled: true
 
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.core.env: DEBUG
