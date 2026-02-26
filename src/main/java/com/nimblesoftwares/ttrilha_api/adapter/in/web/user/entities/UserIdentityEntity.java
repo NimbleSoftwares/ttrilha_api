@@ -1,32 +1,31 @@
 package com.nimblesoftwares.ttrilha_api.adapter.in.web.user.entities;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.OffsetDateTime;
 
+@Builder
 @Setter
 @Getter
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "user_identities")
 public class UserIdentityEntity {
 
   @Column(name = "deleted_at")
   private OffsetDateTime deletedAt;
 
-  @NotNull
   @ColumnDefault("now()")
-  @Column(name = "updated_at", nullable = false)
+  @Column(name = "updated_at", nullable = false, insertable = false)
   private OffsetDateTime updatedAt;
 
-  @NotNull
   @ColumnDefault("now()")
-  @Column(name = "created_at", nullable = false)
+  @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
   private OffsetDateTime createdAt;
 
   @MapsId(value = "userId")

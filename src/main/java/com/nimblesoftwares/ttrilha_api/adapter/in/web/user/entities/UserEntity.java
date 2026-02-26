@@ -1,6 +1,5 @@
 package com.nimblesoftwares.ttrilha_api.adapter.in.web.user.entities;
 
-import com.nimblesoftwares.ttrilha_api.domain.user.model.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -27,14 +26,12 @@ public class UserEntity {
   @Column(name = "deleted_at")
   private OffsetDateTime deletedAt;
 
-  @NotNull
   @ColumnDefault("now()")
-  @Column(name = "updated_at", nullable = false)
+  @Column(name = "updated_at", nullable = false, insertable = false)
   private OffsetDateTime updatedAt;
 
-  @NotNull
   @ColumnDefault("now()")
-  @Column(name = "created_at", nullable = false)
+  @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
   private OffsetDateTime createdAt;
 
   @Size(max = 500)
@@ -60,21 +57,5 @@ public class UserEntity {
   @NotNull
   @Column(name = "email", nullable = false, length = 254)
   private String email;
-
-  public static UserEntity fromDomain(User user) {
-    return UserEntity.builder()
-        .avatarUrl(user.getAvatarUrl())
-        .lastName(user.getLastName())
-        .firstName(user.getFirstName())
-        .displayName(user.getDisplayName())
-        .email(user.getEmail())
-        .build();
-  }
-
-  public User toDomain() {
-    User user = new User(email, displayName, firstName, lastName, avatarUrl);
-    user.setId(id);
-    return user;
-  }
 
 }

@@ -10,6 +10,14 @@ public class UserIdentityId {
   private ProviderEnum provider;
   private String providerUserId;
 
+  public UserIdentityId(){}
+
+  public UserIdentityId(UUID userId, ProviderEnum provider, String providerUserId) {
+    this.userId = userId;
+    this.provider = provider;
+    this.providerUserId = providerUserId;
+  }
+
   public UUID getUserId() {
     return userId;
   }

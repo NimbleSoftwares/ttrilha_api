@@ -10,6 +10,25 @@ public class UserIdentity {
   private OffsetDateTime updatedAt;
   private OffsetDateTime deletedAt;
 
+  public UserIdentity(){}
+
+  public UserIdentity(User user) {
+    this.user = user;
+  }
+
+  public UserIdentity(UserIdentityId id, User user) {
+    this.id = id;
+    this.user = user;
+  }
+
+  public UserIdentity(UserIdentityId id, User user, OffsetDateTime createdAt, OffsetDateTime updatedAt, OffsetDateTime deletedAt) {
+    this.id = id;
+    this.user = user;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+    this.deletedAt = deletedAt;
+  }
+
   public UserIdentityId getId() {
     return id;
   }

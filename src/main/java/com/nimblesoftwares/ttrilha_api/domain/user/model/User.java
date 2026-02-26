@@ -17,7 +17,25 @@ public class User {
 
   public User(){}
 
-  public User(String email, String displayName, String firstName, String lastName, String avatarUrl) {}
+  public User(String email, String displayName, String firstName, String lastName, String avatarUrl) {
+    this.email = email;
+    this.displayName = displayName;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.avatarUrl = avatarUrl;
+  }
+
+  public User(UUID id, String email, String displayName, String firstName, String lastName, String avatarUrl, OffsetDateTime createdAt, OffsetDateTime updatedAt, OffsetDateTime deletedAt) {
+    this.id = id;
+    this.email = email;
+    this.displayName = displayName;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.avatarUrl = avatarUrl;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+    this.deletedAt = deletedAt;
+  }
 
   public UUID getId() {
     return id;

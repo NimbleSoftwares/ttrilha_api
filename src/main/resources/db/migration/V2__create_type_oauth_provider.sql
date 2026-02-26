@@ -1,0 +1,1 @@
+CREATE TYPE oauth_provider AS ENUM ('GOOGLE', 'APPLE');

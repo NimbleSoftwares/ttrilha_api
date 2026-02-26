@@ -1,8 +1,6 @@
-CREATE TYPE oauth_provider AS ENUM ('AUTH0');
-
 CREATE TABLE IF NOT EXISTS user_identities(
    user_id UUID NOT NULL,
-   provider oauth_provider NOT NULL DEFAULT 'AUTH0',
+   provider oauth_provider NOT NULL DEFAULT 'GOOGLE',
    provider_user_id VARCHAR(255) NOT NULL,
    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
