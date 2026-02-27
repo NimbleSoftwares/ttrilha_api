@@ -11,6 +11,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+import java.util.UUID;
+
 @Component
 public class UserJpaRepositoryAdapter implements UserRepositoryPort {
 
@@ -22,6 +25,7 @@ public class UserJpaRepositoryAdapter implements UserRepositoryPort {
     this.userJpaRepository = userJpaRepository;
   }
 
+  @Override
   public User save(User user) {
     try {
       UserEntity saved = userJpaRepository.save(mapper.toPersistence(user));
@@ -30,6 +34,16 @@ public class UserJpaRepositoryAdapter implements UserRepositoryPort {
       throw new UserAlreadyExistsException("This user is already registered.");
     } catch (JpaSystemException e) {
       throw new UserPersistenceException("An error occurred while saving. Please try again.");
+    }
+  }
+
+  @Override
+  public Optional<User> findById(UUID id) {
+    try {
+      Optional<UserEntity> entity = userJpaRepository.findById(id);
+      return entity.map(mapper::toDomain);
+    } catch (JpaSystemException e) {
+      throw new UserPersistenceException("An error occurred. Please try again.");
     }
   }
 }

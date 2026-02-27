@@ -1,5 +1,10 @@
 package com.nimblesoftwares.ttrilha_api.user;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimblesoftwares.ttrilha_api.adapter.in.web.user.dto.SaveUserRequest;
+import com.nimblesoftwares.ttrilha_api.adapter.in.web.user.dto.SaveUserResponse;
+import com.nimblesoftwares.ttrilha_api.application.user.port.out.UserRepositoryPort;
+import com.nimblesoftwares.ttrilha_api.domain.user.model.User;
 import com.nimblesoftwares.ttrilha_api.security.TestSecurityConfig;
 import com.nimblesoftwares.ttrilha_api.utils.JwtTestUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -9,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -17,6 +23,10 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -29,6 +39,12 @@ class SaveUserUseCaseIT {
 
   @Autowired
   private MockMvc mockMvc;
+
+  @Autowired
+  private ObjectMapper objectMapper;
+
+  @Autowired
+  private UserRepositoryPort userRepositoryPort;
 
   @Container
   static PostgreSQLContainer<?> postgres =
@@ -48,14 +64,26 @@ class SaveUserUseCaseIT {
   void test_shouldReturnUserIdWhenAudienceIsCorrect() throws Exception {
     // Arrange
     String token = JwtTestUtils.generateJwtWithAudience("correct-audience");
+    SaveUserRequest request = TestUserBuilders.createSaveUserRequest(false);
 
     // Act & Assert
-    mockMvc.perform(post(BASE_USER_URL + "/sync")
+    MockHttpServletResponse mvcResponse = mockMvc.perform(post(BASE_USER_URL + "/sync")
             .header("Authorization", "Bearer " + token)
-            .contentType(MediaType.APPLICATION_JSON))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.userId").isNotEmpty())
-        .andExpect(header().exists("Location"));
+        .andExpect(header().exists("Location"))
+        .andReturn().getResponse();
+
+    SaveUserResponse response = objectMapper.readValue(mvcResponse
+        .getContentAsString(), SaveUserResponse.class);
+
+    Optional<User> user =userRepositoryPort.findById(UUID.fromString(response.userId()));
+
+    assertTrue(user.isPresent());
+    assertNotNull(user.get().getId());
+    assertEquals(user.get().getDisplayName(), request.displayName());
   }
 
   @Test
@@ -63,11 +91,14 @@ class SaveUserUseCaseIT {
   void test_shouldReturn401WhenAudienceIsInvalid() throws Exception {
     // Arrange
     String token = JwtTestUtils.generateJwtWithAudience("wrong-audience");
+    SaveUserRequest request = TestUserBuilders.createSaveUserRequest(false);
 
     // Act & Assert
     mockMvc.perform(post(BASE_USER_URL + "/sync")
             .header("Authorization", "Bearer " + token)
-            .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isUnauthorized());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isUnauthorized())
+        .andExpect(header().doesNotExist("Location"));
   }
 }

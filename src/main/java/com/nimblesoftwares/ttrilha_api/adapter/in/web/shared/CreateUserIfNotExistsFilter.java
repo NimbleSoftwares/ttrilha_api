@@ -1,8 +1,7 @@
 package com.nimblesoftwares.ttrilha_api.adapter.in.web.shared;
 
-import com.nimblesoftwares.ttrilha_api.adapter.in.web.user.service.SaveUserService;
-import com.nimblesoftwares.ttrilha_api.application.user.command.SaveUserCommand;
 import com.nimblesoftwares.ttrilha_api.application.user.port.out.UserIdentityRepositoryPort;
+import com.nimblesoftwares.ttrilha_api.domain.user.exception.UserNotFoundException;
 import com.nimblesoftwares.ttrilha_api.domain.user.model.UserIdentity;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,11 +18,9 @@ import java.util.Optional;
 @Component
 public class CreateUserIfNotExistsFilter extends OncePerRequestFilter {
 
-  private final SaveUserService saveUserService;
   private final UserIdentityRepositoryPort userIdentityRepository;
 
-  public CreateUserIfNotExistsFilter(SaveUserService saveUserService, UserIdentityRepositoryPort userIdentityRepository) {
-    this.saveUserService = saveUserService;
+  public CreateUserIfNotExistsFilter(UserIdentityRepositoryPort userIdentityRepository) {
     this.userIdentityRepository = userIdentityRepository;
   }
 
@@ -49,21 +46,13 @@ public class CreateUserIfNotExistsFilter extends OncePerRequestFilter {
             );
 
         if(userIdentityOptional.isEmpty()) {
-          SaveUserCommand command = new SaveUserCommand(
-              jwt.getClaimAsString("email"),
-              jwt.getClaimAsString("name"),
-              jwt.getClaimAsString("given_name"),
-              jwt.getClaimAsString("family_name"),
-              jwt.getClaimAsString("picture"),
-              providerIdentity.provider(),
-              providerIdentity.providerUserId()
-          );
-          saveUserService.execute(command);
+          throw new UserNotFoundException("Error authenticating user");
         }
       }
-    } catch (Exception e) {
-      throw new ServletException("User verification failed", e);
-    }
+
+      } catch (Exception e){
+        throw new ServletException("User verification failed", e);
+      }
 
     filterChain.doFilter(request, response);
   }

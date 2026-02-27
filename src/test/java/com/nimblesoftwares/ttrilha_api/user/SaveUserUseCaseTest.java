@@ -8,7 +8,6 @@ import com.nimblesoftwares.ttrilha_api.application.user.port.out.UserRepositoryP
 import com.nimblesoftwares.ttrilha_api.domain.user.enums.ProviderEnum;
 import com.nimblesoftwares.ttrilha_api.domain.user.model.User;
 import com.nimblesoftwares.ttrilha_api.domain.user.model.UserIdentity;
-import com.nimblesoftwares.ttrilha_api.domain.user.model.UserIdentityId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("CreateUserUseCase (Service Impl) Test")
+@DisplayName("SaveUserUseCase (Service Impl) Test")
 class SaveUserUseCaseTest {
 
   @Mock
@@ -35,7 +34,7 @@ class SaveUserUseCaseTest {
   private UserIdentityRepositoryPort userIdentityRepository;
 
   @InjectMocks
-  private SaveUserService createUserService;
+  private SaveUserService saveUserService;
 
   private final String GOOGLE_ID = "12332103213912031321";
   private final ProviderEnum PROVIDER = ProviderEnum.GOOGLE;
@@ -45,7 +44,7 @@ class SaveUserUseCaseTest {
   void test_shouldReturnNewUserIdWhenUserDoesNotExistYet() {
     // Arrange
     UUID expectedId = UUID.randomUUID();
-    SaveUserCommand command = createCommand();
+    SaveUserCommand command = TestUserBuilders.createCommand();
 
     User savedUser = new User();
     savedUser.setId(expectedId);
@@ -62,7 +61,7 @@ class SaveUserUseCaseTest {
         .thenReturn(savedIdentity);
 
     // Act
-    UUID result = createUserService.execute(command);
+    UUID result = saveUserService.execute(command);
 
     // Assert
     assertEquals(expectedId, result);
@@ -78,12 +77,12 @@ class SaveUserUseCaseTest {
   void test_shouldReturnExistingUserIdWhenIdentityAlreadyExists() {
     // Arrange
     UUID existingUserId = UUID.randomUUID();
-    SaveUserCommand command = createCommand();
+    SaveUserCommand command = TestUserBuilders.createCommand();
 
     User existingUser = new User();
     existingUser.setId(existingUserId);
 
-    UserIdentity existingIdentity = createUserIdentity(existingUser);
+    UserIdentity existingIdentity = TestUserBuilders.createUserIdentity(existingUser);
 
     when(userIdentityRepository.findByProviderAndProviderUserId(
         PROVIDER, GOOGLE_ID))
@@ -93,7 +92,7 @@ class SaveUserUseCaseTest {
         .thenReturn(existingUser);
 
     // Act
-    UUID result = createUserService.execute(command);
+    UUID result = saveUserService.execute(command);
 
     // Assert
     assertEquals(existingUserId, result);
@@ -106,36 +105,12 @@ class SaveUserUseCaseTest {
   @DisplayName("edge case - should never save user identity when fail to save the user")
   void test_shouldReturnUserPersistenceExceptionWhenFailToSaveTheUser() {
     // Arrange
-    SaveUserCommand command = createCommand();
+    SaveUserCommand command = TestUserBuilders.createCommand();
     when(userRepository.save(any()))
         .thenThrow(new UserPersistenceException("error"));
 
     // Act and Assert
-    assertThrows(UserPersistenceException.class, () -> createUserService.execute(command));
+    assertThrows(UserPersistenceException.class, () -> saveUserService.execute(command));
     verify(userIdentityRepository, never()).save(any());
-  }
-
-  private SaveUserCommand createCommand() {
-    return new SaveUserCommand(
-        "email_example@gmail.com",
-        "DisplayName",
-        "FirstName",
-        "LastName",
-        null,
-        PROVIDER,
-        GOOGLE_ID
-    );
-  }
-
-  private UserIdentity createUserIdentity(User user) {
-    UserIdentityId userIdentityId = new UserIdentityId();
-    userIdentityId.setUserId(user.getId());
-    userIdentityId.setProvider(PROVIDER);
-    userIdentityId.setProviderUserId(GOOGLE_ID);
-
-    return new UserIdentity(
-        userIdentityId,
-        user
-    );
   }
 }

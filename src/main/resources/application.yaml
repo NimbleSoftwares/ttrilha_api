@@ -10,10 +10,17 @@ spring:
         jwt:
           issuer-uri: https://${AUTH0_OKTA_DOMAIN}/
           audiences: https://${AUTH0_API_AUDIENCE}/
-
   mvc:
     problemdetails:
       enabled: true
+
+  jpa:
+    open-in-view: false
+
+logging:
+  pattern:
+    console: "%clr(%d{HH:mm:ss.SSS}){faint} %clr(%5p) [%X{traceId},%X{spanId}] %clr([%15.15t]){faint} %clr(%-40.40logger{36}){cyan} - %m%n%wEx"
+    correlation: ""
 
 auth0:
   audience: https://${AUTH0_API_AUDIENCE}/
