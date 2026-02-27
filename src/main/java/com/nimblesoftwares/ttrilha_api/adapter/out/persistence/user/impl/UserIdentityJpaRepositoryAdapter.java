@@ -5,7 +5,11 @@ import com.nimblesoftwares.ttrilha_api.adapter.in.web.user.mapper.UserIdentityMa
 import com.nimblesoftwares.ttrilha_api.adapter.out.persistence.user.interfaces.UserIdentityJpaRepository;
 import com.nimblesoftwares.ttrilha_api.application.user.port.out.UserIdentityRepositoryPort;
 import com.nimblesoftwares.ttrilha_api.domain.user.enums.ProviderEnum;
+import com.nimblesoftwares.ttrilha_api.domain.user.exception.UserIdentityAlreadyExistsException;
+import com.nimblesoftwares.ttrilha_api.domain.user.exception.UserIdentityPersistenceException;
 import com.nimblesoftwares.ttrilha_api.domain.user.model.UserIdentity;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -23,9 +27,15 @@ public class UserIdentityJpaRepositoryAdapter implements UserIdentityRepositoryP
 
   public UserIdentity save(UserIdentity userIdentity) {
     UserIdentityEntity entity = mapper.toPersistence(userIdentity);
-    UserIdentityEntity saved = userIdentityJpaRepository.save(entity);
 
-    return mapper.toDomain(saved);
+    try{
+      UserIdentityEntity saved = userIdentityJpaRepository.save(entity);
+      return mapper.toDomain(saved);
+    } catch (DataIntegrityViolationException e) {
+      throw new UserIdentityAlreadyExistsException("This user identity is already registered.");
+    } catch (JpaSystemException e) {
+      throw new UserIdentityPersistenceException("An error occurred while saving. Please try again.");
+    }
   }
 
   @Override

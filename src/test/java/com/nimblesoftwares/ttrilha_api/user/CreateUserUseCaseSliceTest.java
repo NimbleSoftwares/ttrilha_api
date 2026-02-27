@@ -6,6 +6,7 @@ import com.nimblesoftwares.ttrilha_api.adapter.in.web.user.dto.CreateUserRespons
 import com.nimblesoftwares.ttrilha_api.adapter.in.web.user.service.CreateUserService;
 import com.nimblesoftwares.ttrilha_api.application.user.command.CreateUserCommand;
 import com.nimblesoftwares.ttrilha_api.domain.user.enums.ProviderEnum;
+import io.micrometer.tracing.Tracer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -22,12 +23,10 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest
 public class CreateUserUseCaseSliceTest {
@@ -37,6 +36,9 @@ public class CreateUserUseCaseSliceTest {
 
   @Autowired
   MockMvc mockMvc;
+
+  @MockitoBean
+  private Tracer tracer;
 
   @MockitoBean
   CreateUserService createUserService;
@@ -91,6 +93,47 @@ public class CreateUserUseCaseSliceTest {
     assertEquals(GOOGLE_ID, captured.providerUserId());
   }
 
+  @Test
+  @DisplayName("edge case - should return exception when request data is invalid")
+  public void test_shouldReturnExceptionWhenRequestDataIsInvalid() throws Exception {
+    // Arrange
+    CreateUserRequest request = createInvalidRequest();
+
+    // Act
+    mockMvc.perform(post("/api/v1/users")
+            .with(jwt().jwt(jwt -> jwt
+                .claim("sub", request.sub())
+            ))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isBadRequest())
+        .andExpect(header().doesNotExist("Location"));
+
+    // Assert
+    verifyNoInteractions(createUserService);
+  }
+
+  @Test
+  @DisplayName("edge case - should return user id when user alread exists")
+  public void test_shouldReturnUserIdWhenUserAlreadyExists() throws Exception {
+    // Arrange
+    UUID userId = UUID.randomUUID();
+    CreateUserRequest request = createRequest();
+    when(createUserService.execute(any(CreateUserCommand.class))).thenReturn(userId);
+
+    // Act and Assert
+    mockMvc.perform(post("/api/v1/users")
+            .with(jwt().jwt(jwt -> jwt
+                .claim("sub", request.sub())
+            ))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isCreated())
+        .andExpect(header().exists("Location"))
+        .andExpect(jsonPath("$.userId").value(userId.toString()))
+    ;
+  }
+
   private CreateUserRequest createRequest() {
     return new CreateUserRequest(
         "test@gmail.com",
@@ -101,4 +144,15 @@ public class CreateUserUseCaseSliceTest {
         "google-oauth2|12332103213912031321"
     );
   }
+  private CreateUserRequest createInvalidRequest() {
+    return new CreateUserRequest(
+        "@invalid email.com",
+        "my full name",
+        "first name",
+        "last name",
+        "",
+        "google-oauth2|12332103213912031321"
+    );
+  }
+
 }

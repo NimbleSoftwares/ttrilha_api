@@ -1,5 +1,7 @@
 package com.nimblesoftwares.ttrilha_api.domain.user.enums;
 
+import com.nimblesoftwares.ttrilha_api.domain.user.exception.InvalidProviderException;
+
 public enum ProviderEnum {
   GOOGLE,
   APPLE;
@@ -8,7 +10,7 @@ public enum ProviderEnum {
     return switch (prefix.toLowerCase()) {
       case "google-oauth2" -> GOOGLE;
       case "apple"         -> APPLE;
-      default              -> throw new IllegalArgumentException("Invalid provider: " + prefix);
+      default              -> throw new InvalidProviderException("Invalid provider: " + prefix);
     };
   }
 }

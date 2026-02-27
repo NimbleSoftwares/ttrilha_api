@@ -3,6 +3,8 @@ package com.nimblesoftwares.ttrilha_api.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -29,11 +31,12 @@ public class SecurityConfig {
               .requestMatchers("/actuator/**").permitAll()
               .anyRequest().authenticated())
           .oauth2ResourceServer(oauth2 -> oauth2.jwt(
-              jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())))
+              Customizer.withDefaults()))
           .build();
   }
 
   @Bean
+  @Profile("!test")
   public JwtDecoder jwtDecoder() {
     NimbusJwtDecoder jwtDecoder = JwtDecoders.fromIssuerLocation(issuerUri);
 

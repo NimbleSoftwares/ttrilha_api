@@ -2,6 +2,7 @@ package com.nimblesoftwares.ttrilha_api.user;
 
 import com.nimblesoftwares.ttrilha_api.adapter.in.web.user.service.CreateUserService;
 import com.nimblesoftwares.ttrilha_api.application.user.command.CreateUserCommand;
+import com.nimblesoftwares.ttrilha_api.application.user.exception.UserPersistenceException;
 import com.nimblesoftwares.ttrilha_api.application.user.port.out.UserIdentityRepositoryPort;
 import com.nimblesoftwares.ttrilha_api.application.user.port.out.UserRepositoryPort;
 import com.nimblesoftwares.ttrilha_api.domain.user.enums.ProviderEnum;
@@ -18,6 +19,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -39,7 +41,7 @@ class CreateUserUseCaseTest {
 
   @Test
   @DisplayName("happy path - should return new user id when user does not exist yet")
-  void execute_shouldReturnNewUserId_whenUserDoesNotExistYet() {
+  void test_shouldReturnNewUserIdWhenUserDoesNotExistYet() {
     // Arrange
     UUID expectedId = UUID.randomUUID();
     CreateUserCommand command = createCommand();
@@ -72,7 +74,7 @@ class CreateUserUseCaseTest {
 
   @Test
   @DisplayName("edge case - should return existing user id when identity already exists")
-  void execute_shouldReturnExistingUserId_whenIdentityAlreadyExists() {
+  void test_shouldReturnExistingUserIdWhenIdentityAlreadyExists() {
     // Arrange
     UUID existingUserId = UUID.randomUUID();
     CreateUserCommand command = createCommand();
@@ -94,6 +96,19 @@ class CreateUserUseCaseTest {
     assertEquals(existingUserId, result);
 
     verify(userRepository, never()).save(any());
+    verify(userIdentityRepository, never()).save(any());
+  }
+
+  @Test
+  @DisplayName("edge case - should never save user identity when fail to save the user")
+  void test_shouldReturnUserPersistenceExceptionWhenFailToSaveTheUser() {
+    // Arrange
+    CreateUserCommand command = createCommand();
+    when(userRepository.save(any()))
+        .thenThrow(new UserPersistenceException("error"));
+
+    // Act and Assert
+    assertThrows(UserPersistenceException.class, () -> createUserService.execute(command));
     verify(userIdentityRepository, never()).save(any());
   }
 

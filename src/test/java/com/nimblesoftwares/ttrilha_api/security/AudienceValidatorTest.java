@@ -7,12 +7,26 @@ import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AudienceValidatorTest {
 
   @Test
-  @DisplayName("Should validate audience")
+  @DisplayName("happy path - Should validate audience")
+  void test_shouldSucceedWhenAudienceIsCorrect() {
+    Jwt jwt = Jwt.withTokenValue("token")
+        .header("alg", "none")
+        .claim("aud", List.of("correct"))
+        .build();
+
+    AudienceValidator validator = new AudienceValidator("correct");
+
+    assertFalse(validator.validate(jwt).hasErrors());
+  }
+
+  @Test
+  @DisplayName("edge case - Should validate audience")
   void test_shouldFailWhenAudienceIsWrong() {
     Jwt jwt = Jwt.withTokenValue("token")
         .header("alg", "none")
