@@ -28,6 +28,12 @@ public class UserController {
 
   @PostMapping(consumes = "application/json", produces = "application/json")
   public ResponseEntity<CreateUserResponse> create(@Valid @RequestBody CreateUserRequest request) {
+    // TODO: Change the endpoint request mapping to /sync
+    // TODO: Change the endpoint name to sync
+    // TODO: Change the endpoint request to @Authentication Jwt jwt
+    // TODO: delete createUserRequest, build the command from the Jwt claims
+    // TODO: call saveUserUseCase instead of createUserUseCase(delete it), creating or updating the user if already exist
+    // TODO: update all relationed tests
 
     UUID createdId = createUserUseCase.execute(request.toCommand());
     CreateUserResponse response = new CreateUserResponse(createdId.toString());

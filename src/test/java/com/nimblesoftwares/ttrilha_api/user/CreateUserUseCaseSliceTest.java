@@ -5,6 +5,7 @@ import com.nimblesoftwares.ttrilha_api.adapter.in.web.user.dto.CreateUserRequest
 import com.nimblesoftwares.ttrilha_api.adapter.in.web.user.dto.CreateUserResponse;
 import com.nimblesoftwares.ttrilha_api.adapter.in.web.user.service.CreateUserService;
 import com.nimblesoftwares.ttrilha_api.application.user.command.CreateUserCommand;
+import com.nimblesoftwares.ttrilha_api.application.user.port.out.UserIdentityRepositoryPort;
 import com.nimblesoftwares.ttrilha_api.domain.user.enums.ProviderEnum;
 import io.micrometer.tracing.Tracer;
 import org.junit.jupiter.api.DisplayName;
@@ -39,6 +40,9 @@ public class CreateUserUseCaseSliceTest {
 
   @MockitoBean
   private Tracer tracer;
+
+  @MockitoBean
+  UserIdentityRepositoryPort userIdentityRepository;
 
   @MockitoBean
   CreateUserService createUserService;
