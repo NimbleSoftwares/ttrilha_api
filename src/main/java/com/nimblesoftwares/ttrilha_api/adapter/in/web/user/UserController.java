@@ -1,12 +1,13 @@
 package com.nimblesoftwares.ttrilha_api.adapter.in.web.user;
 
-import com.nimblesoftwares.ttrilha_api.adapter.in.web.user.dto.CreateUserRequest;
-import com.nimblesoftwares.ttrilha_api.adapter.in.web.user.dto.CreateUserResponse;
-import com.nimblesoftwares.ttrilha_api.application.user.port.in.CreateUserUseCase;
-import jakarta.validation.Valid;
+import com.nimblesoftwares.ttrilha_api.adapter.in.web.user.dto.SaveUserResponse;
+import com.nimblesoftwares.ttrilha_api.adapter.in.web.user.mapper.UserMapper;
+import com.nimblesoftwares.ttrilha_api.application.user.command.SaveUserCommand;
+import com.nimblesoftwares.ttrilha_api.application.user.port.in.SaveUserUseCase;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -18,30 +19,29 @@ import java.util.UUID;
 @RequestMapping("/api/v1/users")
 public class UserController {
 
-  private final CreateUserUseCase createUserUseCase;
+  private final UserMapper userMapper;
+  private final SaveUserUseCase saveUserUseCase;
 
   public UserController(
-       CreateUserUseCase createUserUseCase
+      UserMapper userMapper,
+      SaveUserUseCase saveUserUseCase
   ) {
-    this.createUserUseCase = createUserUseCase;
+    this.userMapper = userMapper;
+    this.saveUserUseCase = saveUserUseCase;
   }
 
   @PostMapping(consumes = "application/json", produces = "application/json")
-  public ResponseEntity<CreateUserResponse> create(@Valid @RequestBody CreateUserRequest request) {
-    // TODO: Change the endpoint request mapping to /sync
-    // TODO: Change the endpoint name to sync
-    // TODO: Change the endpoint request to @Authentication Jwt jwt
-    // TODO: delete createUserRequest, build the command from the Jwt claims
-    // TODO: call saveUserUseCase instead of createUserUseCase(delete it), creating or updating the user if already exist
-    // TODO: update all relationed tests
+  @RequestMapping("/sync")
+  public ResponseEntity<SaveUserResponse> sync(@AuthenticationPrincipal Jwt jwt) {
 
-    UUID createdId = createUserUseCase.execute(request.toCommand());
-    CreateUserResponse response = new CreateUserResponse(createdId.toString());
+    SaveUserCommand command = userMapper.saveUserCommandfromJwt(jwt);
+    UUID userId = saveUserUseCase.execute(command);
+    SaveUserResponse response = new SaveUserResponse(userId.toString());
 
     URI location = ServletUriComponentsBuilder
         .fromCurrentRequest()
         .path("/{id}")
-        .buildAndExpand(createdId)
+        .buildAndExpand(userId)
         .toUri();
 
     return ResponseEntity.created(location).body(response);

@@ -1,13 +1,14 @@
 package com.nimblesoftwares.ttrilha_api.user;
 
-import com.nimblesoftwares.ttrilha_api.adapter.in.web.user.service.CreateUserService;
-import com.nimblesoftwares.ttrilha_api.application.user.command.CreateUserCommand;
+import com.nimblesoftwares.ttrilha_api.adapter.in.web.user.service.SaveUserService;
+import com.nimblesoftwares.ttrilha_api.application.user.command.SaveUserCommand;
 import com.nimblesoftwares.ttrilha_api.application.user.exception.UserPersistenceException;
 import com.nimblesoftwares.ttrilha_api.application.user.port.out.UserIdentityRepositoryPort;
 import com.nimblesoftwares.ttrilha_api.application.user.port.out.UserRepositoryPort;
 import com.nimblesoftwares.ttrilha_api.domain.user.enums.ProviderEnum;
 import com.nimblesoftwares.ttrilha_api.domain.user.model.User;
 import com.nimblesoftwares.ttrilha_api.domain.user.model.UserIdentity;
+import com.nimblesoftwares.ttrilha_api.domain.user.model.UserIdentityId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +26,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("CreateUserUseCase (Service Impl) Test")
-class CreateUserUseCaseTest {
+class SaveUserUseCaseTest {
 
   @Mock
   private UserRepositoryPort userRepository;
@@ -34,7 +35,7 @@ class CreateUserUseCaseTest {
   private UserIdentityRepositoryPort userIdentityRepository;
 
   @InjectMocks
-  private CreateUserService createUserService;
+  private SaveUserService createUserService;
 
   private final String GOOGLE_ID = "12332103213912031321";
   private final ProviderEnum PROVIDER = ProviderEnum.GOOGLE;
@@ -44,7 +45,7 @@ class CreateUserUseCaseTest {
   void test_shouldReturnNewUserIdWhenUserDoesNotExistYet() {
     // Arrange
     UUID expectedId = UUID.randomUUID();
-    CreateUserCommand command = createCommand();
+    SaveUserCommand command = createCommand();
 
     User savedUser = new User();
     savedUser.setId(expectedId);
@@ -77,17 +78,19 @@ class CreateUserUseCaseTest {
   void test_shouldReturnExistingUserIdWhenIdentityAlreadyExists() {
     // Arrange
     UUID existingUserId = UUID.randomUUID();
-    CreateUserCommand command = createCommand();
+    SaveUserCommand command = createCommand();
 
     User existingUser = new User();
     existingUser.setId(existingUserId);
 
-    UserIdentity existingIdentity = mock(UserIdentity.class);
-    when(existingIdentity.getUser()).thenReturn(existingUser);
+    UserIdentity existingIdentity = createUserIdentity(existingUser);
 
     when(userIdentityRepository.findByProviderAndProviderUserId(
         PROVIDER, GOOGLE_ID))
         .thenReturn(Optional.of(existingIdentity));
+
+    when(userRepository.save(any(User.class)))
+        .thenReturn(existingUser);
 
     // Act
     UUID result = createUserService.execute(command);
@@ -95,7 +98,7 @@ class CreateUserUseCaseTest {
     // Assert
     assertEquals(existingUserId, result);
 
-    verify(userRepository, never()).save(any());
+    verify(userRepository, times(1)).save(any());
     verify(userIdentityRepository, never()).save(any());
   }
 
@@ -103,7 +106,7 @@ class CreateUserUseCaseTest {
   @DisplayName("edge case - should never save user identity when fail to save the user")
   void test_shouldReturnUserPersistenceExceptionWhenFailToSaveTheUser() {
     // Arrange
-    CreateUserCommand command = createCommand();
+    SaveUserCommand command = createCommand();
     when(userRepository.save(any()))
         .thenThrow(new UserPersistenceException("error"));
 
@@ -112,8 +115,8 @@ class CreateUserUseCaseTest {
     verify(userIdentityRepository, never()).save(any());
   }
 
-  private CreateUserCommand createCommand() {
-    return new CreateUserCommand(
+  private SaveUserCommand createCommand() {
+    return new SaveUserCommand(
         "email_example@gmail.com",
         "DisplayName",
         "FirstName",
@@ -121,6 +124,18 @@ class CreateUserUseCaseTest {
         null,
         PROVIDER,
         GOOGLE_ID
+    );
+  }
+
+  private UserIdentity createUserIdentity(User user) {
+    UserIdentityId userIdentityId = new UserIdentityId();
+    userIdentityId.setUserId(user.getId());
+    userIdentityId.setProvider(PROVIDER);
+    userIdentityId.setProviderUserId(GOOGLE_ID);
+
+    return new UserIdentity(
+        userIdentityId,
+        user
     );
   }
 }

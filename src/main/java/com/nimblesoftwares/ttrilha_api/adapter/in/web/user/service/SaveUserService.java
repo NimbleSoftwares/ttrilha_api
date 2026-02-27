@@ -1,7 +1,7 @@
 package com.nimblesoftwares.ttrilha_api.adapter.in.web.user.service;
 
-import com.nimblesoftwares.ttrilha_api.application.user.command.CreateUserCommand;
-import com.nimblesoftwares.ttrilha_api.application.user.port.in.CreateUserUseCase;
+import com.nimblesoftwares.ttrilha_api.application.user.command.SaveUserCommand;
+import com.nimblesoftwares.ttrilha_api.application.user.port.in.SaveUserUseCase;
 import com.nimblesoftwares.ttrilha_api.application.user.port.out.UserIdentityRepositoryPort;
 import com.nimblesoftwares.ttrilha_api.application.user.port.out.UserRepositoryPort;
 import com.nimblesoftwares.ttrilha_api.domain.user.model.User;
@@ -14,29 +14,33 @@ import java.util.UUID;
 
 @Service
 @Transactional
-public class CreateUserService implements CreateUserUseCase {
+public class SaveUserService implements SaveUserUseCase {
 
   private final UserRepositoryPort userRepository;
   private final UserIdentityRepositoryPort userIdentityRepository;
 
-  public CreateUserService(
+  public SaveUserService(
       UserIdentityRepositoryPort userIdentityRepository, UserRepositoryPort userRepository) {
     this.userIdentityRepository = userIdentityRepository;
     this.userRepository = userRepository;
   }
 
   @Override
-  public UUID execute(CreateUserCommand command) {
+  public UUID execute(SaveUserCommand command) {
 
-    Optional<UserIdentity> existing = userIdentityRepository.findByProviderAndProviderUserId(
+    Optional<UserIdentity> existingOpt = userIdentityRepository.findByProviderAndProviderUserId(
         command.provider(),
         command.providerUserId()
     );
 
-    if(existing.isPresent()) return existing.get().getUser().getId();
+    if(existingOpt.isPresent()) {
+      User userToUpdate = command.toUser();
+      userToUpdate.setId(existingOpt.get().getId().getUserId());
+      User updatedUser = userRepository.save(userToUpdate);
+      return updatedUser.getId();
+    }
 
     User savedUser = userRepository.save(command.toUser());
-
     userIdentityRepository.save(command.toUserIdentity(savedUser));
 
     return savedUser.getId();

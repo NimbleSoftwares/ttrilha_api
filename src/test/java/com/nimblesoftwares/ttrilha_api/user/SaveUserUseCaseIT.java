@@ -1,7 +1,5 @@
 package com.nimblesoftwares.ttrilha_api.user;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimblesoftwares.ttrilha_api.adapter.in.web.user.dto.CreateUserRequest;
 import com.nimblesoftwares.ttrilha_api.security.TestSecurityConfig;
 import com.nimblesoftwares.ttrilha_api.utils.JwtTestUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -27,13 +25,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Import(TestSecurityConfig.class)
-class CreateUserUseCaseIT {
+class SaveUserUseCaseIT {
 
   @Autowired
   private MockMvc mockMvc;
-
-  @Autowired
-  ObjectMapper objectMapper;
 
   @Container
   static PostgreSQLContainer<?> postgres =
@@ -46,18 +41,18 @@ class CreateUserUseCaseIT {
     registry.add("spring.datasource.password", postgres::getPassword);
   }
 
+  private final String BASE_USER_URL = "/api/v1/users";
+
   @Test
   @DisplayName("happy path - should return user id when jwt audience is the real one")
   void test_shouldReturnUserIdWhenAudienceIsCorrect() throws Exception {
     // Arrange
-    CreateUserRequest request = createRequest();
     String token = JwtTestUtils.generateJwtWithAudience("correct-audience");
 
     // Act & Assert
-    mockMvc.perform(post("/api/v1/users")
+    mockMvc.perform(post(BASE_USER_URL + "/sync")
             .header("Authorization", "Bearer " + token)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request)))
+            .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.userId").isNotEmpty())
         .andExpect(header().exists("Location"));
@@ -67,26 +62,12 @@ class CreateUserUseCaseIT {
   @DisplayName("edge case - should return 401 when jwt audience is not the real one")
   void test_shouldReturn401WhenAudienceIsInvalid() throws Exception {
     // Arrange
-    CreateUserRequest request = createRequest();
     String token = JwtTestUtils.generateJwtWithAudience("wrong-audience");
 
     // Act & Assert
-    mockMvc.perform(post("/api/v1/users")
+    mockMvc.perform(post(BASE_USER_URL + "/sync")
             .header("Authorization", "Bearer " + token)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request)))
+            .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
-
-  private CreateUserRequest createRequest() {
-    return new CreateUserRequest(
-        "test@gmail.com",
-        "my full name",
-        "first name",
-        "last name",
-        "",
-        "google-oauth2|12332103213912031321"
-    );
-  }
-
 }

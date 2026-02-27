@@ -5,7 +5,7 @@ import com.nimblesoftwares.ttrilha_api.domain.user.model.User;
 import com.nimblesoftwares.ttrilha_api.domain.user.model.UserIdentity;
 import com.nimblesoftwares.ttrilha_api.domain.user.model.UserIdentityId;
 
-public record CreateUserCommand(
+public record SaveUserCommand(
     String email,
     String displayName,
     String firstName,

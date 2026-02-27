@@ -1,7 +1,7 @@
 package com.nimblesoftwares.ttrilha_api.adapter.in.web.shared;
 
-import com.nimblesoftwares.ttrilha_api.adapter.in.web.user.service.CreateUserService;
-import com.nimblesoftwares.ttrilha_api.application.user.command.CreateUserCommand;
+import com.nimblesoftwares.ttrilha_api.adapter.in.web.user.service.SaveUserService;
+import com.nimblesoftwares.ttrilha_api.application.user.command.SaveUserCommand;
 import com.nimblesoftwares.ttrilha_api.application.user.port.out.UserIdentityRepositoryPort;
 import com.nimblesoftwares.ttrilha_api.domain.user.model.UserIdentity;
 import jakarta.servlet.FilterChain;
@@ -19,11 +19,11 @@ import java.util.Optional;
 @Component
 public class CreateUserIfNotExistsFilter extends OncePerRequestFilter {
 
-  private final CreateUserService createUserService;
+  private final SaveUserService saveUserService;
   private final UserIdentityRepositoryPort userIdentityRepository;
 
-  public CreateUserIfNotExistsFilter(CreateUserService createUserService, UserIdentityRepositoryPort userIdentityRepository) {
-    this.createUserService = createUserService;
+  public CreateUserIfNotExistsFilter(SaveUserService saveUserService, UserIdentityRepositoryPort userIdentityRepository) {
+    this.saveUserService = saveUserService;
     this.userIdentityRepository = userIdentityRepository;
   }
 
@@ -49,7 +49,7 @@ public class CreateUserIfNotExistsFilter extends OncePerRequestFilter {
             );
 
         if(userIdentityOptional.isEmpty()) {
-          CreateUserCommand command = new CreateUserCommand(
+          SaveUserCommand command = new SaveUserCommand(
               jwt.getClaimAsString("email"),
               jwt.getClaimAsString("name"),
               jwt.getClaimAsString("given_name"),
@@ -58,7 +58,7 @@ public class CreateUserIfNotExistsFilter extends OncePerRequestFilter {
               providerIdentity.provider(),
               providerIdentity.providerUserId()
           );
-          createUserService.execute(command);
+          saveUserService.execute(command);
         }
       }
     } catch (Exception e) {
