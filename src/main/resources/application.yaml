@@ -1,6 +1,7 @@
 spring:
   application:
     name: ttrilha-api
+
   config:
     import: optional:file:.env[.properties]
 
@@ -29,6 +30,21 @@ logging:
   pattern:
     console: "%clr(%d{HH:mm:ss.SSS}){faint} %clr(%5p) [%X{traceId},%X{spanId}] %clr([%15.15t]){faint} %clr(%-40.40logger{36}){cyan} - %m%n%wEx"
     correlation: ""
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      test-circuit-breaker:
+        failureRateThreshold: 50
+        slidingWindowSize: 6
+        minimumNumberOfCalls: 5
+        waitDurationInOpenState: 10s
+  ratelimiter:
+    instances:
+      test-rate-limiter:
+        limitForPeriod: 10
+        limitRefreshPeriod: 10s
+        timeoutDuration: 10s
 
 auth0:
   audience: https://${AUTH0_API_AUDIENCE}/
