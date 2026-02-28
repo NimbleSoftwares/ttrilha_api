@@ -1,8 +1,10 @@
 package com.nimblesoftwares.ttrilha_api.config;
 
+import com.nimblesoftwares.ttrilha_api.adapter.in.web.shared.CreateUserIfNotExistsFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
@@ -10,6 +12,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.*;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -22,18 +25,30 @@ public class SecurityConfig {
   private String audience;
 
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain securityFilterChain(
+      HttpSecurity http,
+      CreateUserIfNotExistsFilter createUserIfNotExistsFilter
+  ) throws Exception {
+
       return http
           .csrf(CsrfConfigurer::disable)
           .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
           .authorizeHttpRequests(authorize -> authorize
               .requestMatchers("/actuator/**").permitAll()
+              .requestMatchers("/swagger-ui.html").permitAll()
+              .requestMatchers("/swagger-ui/**").permitAll()
+              .requestMatchers("/v3/api-docs/**").permitAll()
+              .requestMatchers("/api-docs/**").permitAll()
+              .requestMatchers("/webjars/**").permitAll()
               .anyRequest().authenticated())
-          .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+          .oauth2ResourceServer(oauth2 -> oauth2.jwt(
+              Customizer.withDefaults()))
+          .addFilterAfter(createUserIfNotExistsFilter, BearerTokenAuthenticationFilter.class)
           .build();
   }
 
   @Bean
+  @Profile("!test")
   public JwtDecoder jwtDecoder() {
     NimbusJwtDecoder jwtDecoder = JwtDecoders.fromIssuerLocation(issuerUri);
 

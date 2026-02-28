@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ttrilha — Hexagonal Architecture v1</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAF9F6;
+    --card-bg: #FFFFFF;
+    --border: #E8E6E1;
+    --text: #2C2C2C;
+    --text-muted: #8A8A85;
+    --orange: #E87D3E;
+    --orange-light: #FFF3EC;
+    --spruce: #2D5A3D;
+    --spruce-light: #EDF5F0;
+    --blue: #4A7FB5;
+    --blue-light: #EEF4FA;
+    --purple: #7B5EA7;
+    --purple-light: #F3EFF8;
+    --amber: #B8860B;
+    --amber-light: #FDF6E3;
+    --teal: #2A7B8B;
+    --teal-light: #E8F5F7;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+    --serif: 'Playfair Display', serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.6;
+    padding: 40px 20px;
+  }
+
+  .container { max-width: 1200px; margin: 0 auto; }
+
+  .header { text-align: center; margin-bottom: 48px; }
+  .header h1 {
+    font-family: var(--serif);
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+  .header h1 span { color: var(--orange); }
+  .header p {
+    font-size: 1rem;
+    color: var(--text-muted);
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .badge-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .badge {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 4px 12px;
+    border-radius: 4px;
+    border: 1px solid;
+  }
+  .badge--orange { background: var(--orange-light); color: var(--orange); border-color: #f0c9a8; }
+  .badge--spruce { background: var(--spruce-light); color: var(--spruce); border-color: #b3d4c0; }
+  .badge--blue { background: var(--blue-light); color: var(--blue); border-color: #b0cfe6; }
+
+  /* Diagram */
+  .diagram-wrapper {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 36px 24px;
+    margin-bottom: 44px;
+    overflow-x: auto;
+  }
+  .diagram-title {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .hex-flow {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0;
+    min-width: 820px;
+    margin: 0 auto;
+  }
+  .hex-box {
+    flex: 1;
+    max-width: 200px;
+    padding: 20px 16px;
+    border-radius: 10px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .hex-box h3 {
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+  }
+  .hex-box ul {
+    list-style: none;
+    font-size: 0.76rem;
+    line-height: 1.8;
+    color: var(--text-muted);
+  }
+  .hex-arrow {
+    display: flex;
+    align-items: center;
+    font-size: 1.6rem;
+    color: var(--border);
+    padding: 0 6px;
+    flex-shrink: 0;
+  }
+  .hex-adapter-in { background: var(--blue-light); border: 2px solid var(--blue); }
+  .hex-adapter-in h3 { color: var(--blue); }
+  .hex-app { background: var(--teal-light); border: 2px solid var(--teal); }
+  .hex-app h3 { color: var(--teal); }
+  .hex-domain { background: var(--orange-light); border: 2px solid var(--orange); }
+  .hex-domain h3 { color: var(--orange); }
+  .hex-adapter-out { background: var(--spruce-light); border: 2px solid var(--spruce); }
+  .hex-adapter-out h3 { color: var(--spruce); }
+  .hex-config { background: var(--purple-light); border: 2px solid var(--purple); }
+  .hex-config h3 { color: var(--purple); }
+
+  /* Dep Rule */
+  .dep-rule {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+  .dep-rule h3 {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+  .dep-chain {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: wrap;
+  }
+  .dep-node {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 8px 18px;
+    border-radius: 6px;
+  }
+  .dep-arrow-r {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    padding: 0 8px;
+  }
+  .dep-note {
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    margin-top: 14px;
+    line-height: 1.7;
+  }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  /* Section */
+  .section { margin-bottom: 28px; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+  }
+  .section-header:hover .section-title { opacity: 0.7; }
+  .section-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-family: var(--mono);
+    font-size: 0.92rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    transition: opacity 0.2s;
+  }
+  .section-desc {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-left: auto;
+    text-align: right;
+  }
+  .section-chevron {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    transition: transform 0.3s ease;
+    margin-left: 8px;
+  }
+  .section-chevron.open { transform: rotate(90deg); }
+
+  /* Tree grid */
+  .tree-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 14px;
+  }
+  .tree-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    transition: box-shadow 0.2s;
+  }
+  .tree-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+  .tree-card-title {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tree-card-title .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  /* Tree text */
+  .tree {
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    line-height: 1.85;
+    color: var(--text);
+  }
+  .tree .dir { font-weight: 600; color: var(--text); }
+  .tree .file { color: var(--text-muted); font-weight: 400; }
+  .tree .comment { color: var(--text-muted); font-weight: 300; font-size: 0.7rem; opacity: 0.7; }
+  .tree .iface { color: var(--purple); font-weight: 500; }
+  .tree .impl { color: var(--spruce); font-weight: 500; }
+  .tree .dto { color: var(--amber); font-weight: 500; }
+  .tree .app-file { color: var(--teal); font-weight: 500; }
+  .tree .indent {
+    padding-left: 18px;
+    display: block;
+    border-left: 1px solid var(--border);
+    margin-left: 4px;
+  }
+
+  /* Tags */
+  .tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+  .tag--interface { background: var(--purple-light); color: var(--purple); }
+  .tag--pojo { background: var(--orange-light); color: var(--orange); }
+  .tag--jpa { background: var(--spruce-light); color: var(--spruce); }
+  .tag--dto { background: var(--amber-light); color: var(--amber); }
+  .tag--config { background: var(--blue-light); color: var(--blue); }
+  .tag--usecase { background: var(--teal-light); color: var(--teal); }
+
+  /* Callout */
+  .callout {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-top: 12px;
+    font-size: 0.84rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+  }
+  .callout strong { color: var(--text); font-weight: 600; }
+  .callout code {
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    background: var(--bg);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--text);
+  }
+  .callout.orange { border-left: 3px solid var(--orange); }
+  .callout.teal { border-left: 3px solid var(--teal); }
+  .callout.blue { border-left: 3px solid var(--blue); }
+  .callout.spruce { border-left: 3px solid var(--spruce); }
+  .callout.purple { border-left: 3px solid var(--purple); }
+
+  .footer {
+    text-align: center;
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+
+  @media (max-width: 768px) {
+    .header h1 { font-size: 1.8rem; }
+    .tree-grid { grid-template-columns: 1fr; }
+    .hex-flow { flex-direction: column; min-width: auto; align-items: center; }
+    .hex-box { max-width: 280px; width: 100%; }
+    .hex-arrow { transform: rotate(90deg); padding: 4px 0; }
+    .section-desc { display: none; }
+    .dep-chain { flex-direction: column; }
+    .dep-arrow-r { transform: rotate(90deg); padding: 4px 0; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1><span>ttrilha</span> — Hexagonal Architecture</h1>
+    <p>Estrutura com separação domain (modelos puros) → application (orquestração) → adapter (mundo externo)</p>
+    <div class="badge-row">
+      <span class="badge badge--orange">Java 21</span>
+      <span class="badge badge--spruce">Spring Boot 3.4</span>
+      <span class="badge badge--blue">PostgreSQL + PostGIS</span>
+    </div>
+  </div>
+
+  <!-- Diagram -->
+  <div class="diagram-wrapper">
+    <div class="diagram-title">Fluxo de dependência — de fora para dentro</div>
+    <div class="hex-flow">
+      <div class="hex-box hex-adapter-in">
+        <h3>Adapter In</h3>
+        <ul>
+          <li>Controllers REST</li>
+          <li>Request / Response DTOs</li>
+          <li>Web Mappers</li>
+        </ul>
+      </div>
+      <div class="hex-arrow">→</div>
+      <div class="hex-box hex-app">
+        <h3>Application</h3>
+        <ul>
+          <li>Use Cases (in-ports)</li>
+          <li>Out-Ports (interfaces)</li>
+          <li>Services (orquestração)</li>
+          <li>Commands</li>
+        </ul>
+      </div>
+      <div class="hex-arrow">→</div>
+      <div class="hex-box hex-domain">
+        <h3>Domain</h3>
+        <ul>
+          <li>Entities (POJOs)</li>
+          <li>Value Objects</li>
+          <li>Enums</li>
+          <li>Domain Exceptions</li>
+        </ul>
+      </div>
+      <div class="hex-arrow">←</div>
+      <div class="hex-box hex-adapter-out">
+        <h3>Adapter Out</h3>
+        <ul>
+          <li>JPA Entities + Repos</li>
+          <li>S3 Storage</li>
+          <li>Event Publisher</li>
+          <li>Persistence Mappers</li>
+        </ul>
+      </div>
+      <div class="hex-arrow">←</div>
+      <div class="hex-box hex-config">
+        <h3>Config</h3>
+        <ul>
+          <li>Security / Auth0</li>
+          <li>Bean Wiring</li>
+          <li>CORS, Jackson</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dependency Rule -->
+  <div class="dep-rule">
+    <h3>Regra de dependência</h3>
+    <div class="dep-chain">
+      <div class="dep-node" style="background:var(--blue-light);color:var(--blue);">adapter</div>
+      <div class="dep-arrow-r">→</div>
+      <div class="dep-node" style="background:var(--teal-light);color:var(--teal);">application</div>
+      <div class="dep-arrow-r">→</div>
+      <div class="dep-node" style="background:var(--orange-light);color:var(--orange);">domain</div>
+    </div>
+    <div class="dep-note">
+      <strong>domain</strong> não importa nada · <strong>application</strong> importa só domain · <strong>adapter</strong> importa application + domain · Nunca o inverso
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div> Entity / VO</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--teal)"></div> Use Case / Service</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div> Interface (port)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div> DTO / Command</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--spruce)"></div> Adapter impl</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div> Config</div>
+  </div>
+
+  <!-- ═══════════════ DOMAIN ═══════════════ -->
+  <div class="section">
+    <div class="section-header" onclick="toggle('domain')">
+      <div class="section-icon" style="background:var(--orange-light);color:var(--orange);">🎯</div>
+      <span class="section-title" style="color:var(--orange);">domain/</span>
+      <span class="section-desc">Modelos puros — zero framework, zero dependência</span>
+      <span class="section-chevron open" id="chev-domain">▶</span>
+    </div>
+    <div id="content-domain">
+      <div class="tree-grid">
+
+        <div class="tree-card">
+          <div class="tree-card-title"><div class="dot" style="background:var(--orange)"></div>expedition/</div>
+          <div class="tree">
+            <span class="dir">model/</span>
+            <span class="indent">
+              <span class="file">Expedition.java</span> <span class="tag tag--pojo">entity</span><br>
+              <span class="file">Location.java</span> <span class="tag tag--pojo">value object</span> <span class="comment">— lat, lng, alt</span>
+            </span>
+            <span class="dir">enums/</span>
+            <span class="indent">
+              <span class="file">ExpeditionStatus.java</span> <span class="comment">— DRAFT, ACTIVE, COMPLETED, SHARED</span>
+            </span>
+            <span class="dir">exception/</span>
+            <span class="indent">
+              <span class="file">ExpeditionNotFoundException.java</span><br>
+              <span class="file">ExpeditionAccessDeniedException.java</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="tree-card">
+          <div class="tree-card-title"><div class="dot" style="background:var(--orange)"></div>media/</div>
+          <div class="tree">
+            <span class="dir">model/</span>
+            <span class="indent">
+              <span class="file">MediaItem.java</span> <span class="tag tag--pojo">entity</span><br>
+              <span class="file">MediaMetadata.java</span> <span class="tag tag--pojo">value object</span>
+            </span>
+            <span class="dir">enums/</span>
+            <span class="indent">
+              <span class="file">MediaType.java</span> <span class="comment">— PHOTO, AUDIO</span>
+            </span>
+            <span class="dir">exception/</span>
+            <span class="indent"><span class="file">MediaNotFoundException.java</span></span>
+          </div>
+        </div>
+
+        <div class="tree-card">
+          <div class="tree-card-title"><div class="dot" style="background:var(--orange)"></div>gpstrack/</div>
+          <div class="tree">
+            <span class="dir">model/</span>
+            <span class="indent">
+              <span class="file">GpsTrack.java</span> <span class="tag tag--pojo">entity</span><br>
+              <span class="file">TrackPoint.java</span> <span class="tag tag--pojo">value object</span> <span class="comment">— lat, lng, alt, ts, acc</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="tree-card">
+          <div class="tree-card-title"><div class="dot" style="background:var(--orange)"></div>ropeteam/</div>
+          <div class="tree">
+            <span class="dir">model/</span>
+            <span class="indent">
+              <span class="file">RopeTeamMember.java</span> <span class="tag tag--pojo">entity</span>
+            </span>
+            <span class="dir">enums/</span>
+            <span class="indent">
+              <span class="file">MemberRole.java</span> <span class="comment">— OWNER, GUEST, EDITOR</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="tree-card">
+          <div class="tree-card-title"><div class="dot" style="background:var(--orange)"></div>story/</div>
+          <div class="tree">
+            <span class="dir">model/</span>
+            <span class="indent">
+              <span class="file">TopographicStory.java</span> <span class="tag tag--pojo">entity</span>
+            </span>
+            <span class="dir">enums/</span>
+            <span class="indent">
+              <span class="file">StoryLayout.java</span> <span class="comment">— ELEVATION_PROFILE, PHOTO_GRID…</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="tree-card">
+          <div class="tree-card-title"><div class="dot" style="background:var(--orange)"></div>user/ · shared/</div>
+          <div class="tree">
+            <span class="dir">user/model/</span>
+            <span class="indent">
+              <span class="file">UserProfile.java</span> <span class="tag tag--pojo">entity</span>
+            </span>
+            <span class="dir">shared/</span>
+            <span class="indent">
+              <span class="file">DomainException.java</span> <span class="comment">— base abstrata</span><br>
+              <span class="file">PageResult.java</span> <span class="comment">— paginação genérica</span>
+            </span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="callout orange">
+        <strong>Regra absoluta:</strong> Nada aqui importa Spring, JPA, Hibernate, Jackson ou AWS SDK.
+        São POJOs Java puros — entidades, value objects, enums e exceptions de domínio.
+        Se um <code>import</code> começa com <code>org.springframework</code> ou <code>jakarta.</code>, está no lugar errado.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ APPLICATION ═══════════════ -->
+  <div class="section">
+    <div class="section-header" onclick="toggle('app')">
+      <div class="section-icon" style="background:var(--teal-light);color:var(--teal);">⚡</div>
+      <span class="section-title" style="color:var(--teal);">application/</span>
+      <span class="section-desc">Orquestração — use cases, ports, services, commands</span>
+      <span class="section-chevron open" id="chev-app">▶</span>
+    </div>
+    <div id="content-app">
+      <div class="tree-grid">
+
+        <div class="tree-card">
+          <div class="tree-card-title"><div class="dot" style="background:var(--teal)"></div>expedition/</div>
+          <div class="tree">
+            <span class="dir">port/in/</span> <span class="comment">— o que o mundo externo pode pedir</span>
+            <span class="indent">
+              <span class="iface">CreateExpeditionUseCase.java</span> <span class="tag tag--interface">interface</span><br>
+              <span class="iface">FindExpeditionUseCase.java</span> <span class="tag tag--interface">interface</span><br>
+              <span class="iface">UpdateExpeditionUseCase.java</span> <span class="tag tag--interface">interface</span><br>
+              <span class="iface">CompleteExpeditionUseCase.java</span> <span class="tag tag--interface">interface</span>
+            </span>
+            <span class="dir">port/out/</span> <span class="comment">— o que o service precisa do mundo externo</span>
+            <span class="indent">
+              <span class="iface">ExpeditionRepository.java</span> <span class="tag tag--interface">interface</span><br>
+              <span class="iface">ExpeditionEventPublisher.java</span> <span class="tag tag--interface">interface</span>
+            </span>
+            <span class="dir">command/</span> <span class="comment">— objetos imutáveis de entrada</span>
+            <span class="indent">
+              <span class="dto">CreateExpeditionCommand.java</span> <span class="tag tag--dto">command</span><br>
+              <span class="dto">UpdateExpeditionCommand.java</span> <span class="tag tag--dto">command</span><br>
+              <span class="dto">CompleteExpeditionCommand.java</span> <span class="tag tag--dto">command</span>
+            </span>
+            <span class="dir">service/</span> <span class="comment">— implementa os in-ports</span>
+            <span class="indent">
+              <span class="app-file">ExpeditionService.java</span> <span class="tag tag--usecase">service</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="tree-card">
+          <div class="tree-card-title"><div class="dot" style="background:var(--teal)"></div>media/</div>
+          <div class="tree">
+            <span class="dir">port/in/</span>
+            <span class="indent">
+              <span class="iface">RequestUploadUseCase.java</span> <span class="tag tag--interface">interface</span><br>
+              <span class="iface">ConfirmUploadUseCase.java</span> <span class="tag tag--interface">interface</span><br>
+              <span class="iface">ListExpeditionMediaUseCase.java</span> <span class="tag tag--interface">interface</span><br>
+              <span class="iface">DeleteMediaUseCase.java</span> <span class="tag tag--interface">interface</span>
+            </span>
+            <span class="dir">port/out/</span>
+            <span class="indent">
+              <span class="iface">MediaRepository.java</span> <span class="tag tag--interface">interface</span><br>
+              <span class="iface">FileStoragePort.java</span> <span class="tag tag--interface">interface</span> <span class="comment">— abstrai S3</span>
+            </span>
+            <span class="dir">command/</span>
+            <span class="indent">
+              <span class="dto">RequestUploadCommand.java</span> <span class="tag tag--dto">command</span><br>
+              <span class="dto">ConfirmUploadCommand.java</span> <span class="tag tag--dto">command</span>
+            </span>
+            <span class="dir">service/</span>
+            <span class="indent">
+              <span class="app-file">MediaService.java</span> <span class="tag tag--usecase">service</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="tree-card">
+          <div class="tree-card-title"><div class="dot" style="background:var(--teal)"></div>gpstrack/</div>
+          <div class="tree">
+            <span class="dir">port/in/</span>
+            <span class="indent">
+              <span class="iface">RecordTrackUseCase.java</span> <span class="tag tag--interface">interface</span><br>
+              <span class="iface">GetTrackUseCase.java</span> <span class="tag tag--interface">interface</span>
+            </span>
+            <span class="dir">port/out/</span>
+            <span class="indent">
+              <span class="iface">GpsTrackRepository.java</span> <span class="tag tag--interface">interface</span>
+            </span>
+            <span class="dir">command/</span>
+            <span class="indent">
+              <span class="dto">RecordTrackCommand.java</span> <span class="tag tag--dto">command</span>
+            </span>
+            <span class="dir">service/</span>
+            <span class="indent">
+              <span class="app-file">GpsTrackService.java</span> <span class="tag tag--usecase">service</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="tree-card">
+          <div class="tree-card-title"><div class="dot" style="background:var(--teal)"></div>ropeteam/</div>
+          <div class="tree">
+            <span class="dir">port/in/</span>
+            <span class="indent">
+              <span class="iface">InviteMemberUseCase.java</span> <span class="tag tag--interface">interface</span><br>
+              <span class="iface">ListRopeTeamUseCase.java</span> <span class="tag tag--interface">interface</span>
+            </span>
+            <span class="dir">port/out/</span>
+            <span class="indent">
+              <span class="iface">RopeTeamRepository.java</span> <span class="tag tag--interface">interface</span>
+            </span>
+            <span class="dir">command/</span>
+            <span class="indent">
+              <span class="dto">InviteMemberCommand.java</span> <span class="tag tag--dto">command</span>
+            </span>
+            <span class="dir">service/</span>
+            <span class="indent"><span class="app-file">RopeTeamService.java</span> <span class="tag tag--usecase">service</span></span>
+          </div>
+        </div>
+
+        <div class="tree-card">
+          <div class="tree-card-title"><div class="dot" style="background:var(--teal)"></div>story/</div>
+          <div class="tree">
+            <span class="dir">port/in/</span>
+            <span class="indent">
+              <span class="iface">GenerateStoryUseCase.java</span> <span class="tag tag--interface">interface</span><br>
+              <span class="iface">ExportStoryUseCase.java</span> <span class="tag tag--interface">interface</span>
+            </span>
+            <span class="dir">port/out/</span>
+            <span class="indent">
+              <span class="iface">StoryRepository.java</span> <span class="tag tag--interface">interface</span><br>
+              <span class="iface">ImageRenderPort.java</span> <span class="tag tag--interface">interface</span>
+            </span>
+            <span class="dir">command/</span>
+            <span class="indent">
+              <span class="dto">GenerateStoryCommand.java</span> <span class="tag tag--dto">command</span>
+            </span>
+            <span class="dir">service/</span>
+            <span class="indent"><span class="app-file">StoryService.java</span> <span class="tag tag--usecase">service</span></span>
+          </div>
+        </div>
+
+        <div class="tree-card">
+          <div class="tree-card-title"><div class="dot" style="background:var(--teal)"></div>user/</div>
+          <div class="tree">
+            <span class="dir">port/in/</span>
+            <span class="indent">
+              <span class="iface">GetUserProfileUseCase.java</span> <span class="tag tag--interface">interface</span><br>
+              <span class="iface">UpdateUserProfileUseCase.java</span> <span class="tag tag--interface">interface</span>
+            </span>
+            <span class="dir">port/out/</span>
+            <span class="indent">
+              <span class="iface">UserProfileRepository.java</span> <span class="tag tag--interface">interface</span>
+            </span>
+            <span class="dir">command/</span>
+            <span class="indent">
+              <span class="dto">UpdateUserProfileCommand.java</span> <span class="tag tag--dto">command</span>
+            </span>
+            <span class="dir">service/</span>
+            <span class="indent"><span class="app-file">UserProfileService.java</span> <span class="tag tag--usecase">service</span></span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="callout teal">
+        <strong>Application vs Domain:</strong> A camada <code>application/</code> orquestra o domínio.
+        Os <strong>Services</strong> implementam os in-ports e coordenam domain models + out-ports.
+        Os <strong>Commands</strong> são Java records imutáveis que carregam dados de entrada.
+        Os <strong>Ports</strong> definem contratos com o mundo externo (in = quem chama, out = quem é chamado).
+        Pode importar <code>domain</code>, mas <strong>nunca</strong> importa <code>adapter</code>.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ ADAPTER IN ═══════════════ -->
+  <div class="section">
+    <div class="section-header" onclick="toggle('adapter-in')">
+      <div class="section-icon" style="background:var(--blue-light);color:var(--blue);">📥</div>
+      <span class="section-title" style="color:var(--blue);">adapter/in/web/</span>
+      <span class="section-desc">Driving Adapters — controllers REST + DTOs HTTP</span>
+      <span class="section-chevron open" id="chev-adapter-in">▶</span>
+    </div>
+    <div id="content-adapter-in">
+      <div class="tree-grid">
+
+        <div class="tree-card">
+          <div class="tree-card-title"><div class="dot" style="background:var(--blue)"></div>expedition/</div>
+          <div class="tree">
+            <span class="file">ExpeditionController.java</span> <span class="comment">— @RestController</span><br>
+            <span class="dto">CreateExpeditionRequest.java</span> <span class="tag tag--dto">request</span> <span class="comment">— @NotBlank, @Valid</span><br>
+            <span class="dto">UpdateExpeditionRequest.java</span> <span class="tag tag--dto">request</span><br>
+            <span class="dto">ExpeditionResponse.java</span> <span class="tag tag--dto">response</span><br>
+            <span class="file">ExpeditionWebMapper.java</span> <span class="comment">— Request → Command, Domain → Response</span>
+          </div>
+        </div>
+
+        <div class="tree-card">
+          <div class="tree-card-title"><div class="dot" style="background:var(--blue)"></div>media/</div>
+          <div class="tree">
+            <span class="file">MediaController.java</span><br>
+            <span class="dto">PresignedUploadResponse.java</span> <span class="tag tag--dto">response</span><br>
+            <span class="dto">ConfirmUploadRequest.java</span> <span class="tag tag--dto">request</span><br>
+            <span class="dto">MediaResponse.java</span> <span class="tag tag--dto">response</span><br>
+            <span class="file">MediaWebMapper.java</span>
+          </div>
+        </div>
+
+        <div class="tree-card">
+          <div class="tree-card-title"><div class="dot" style="background:var(--blue)"></div>gpstrack/ · ropeteam/ · story/ · user/</div>
+          <div class="tree">
+            <span class="file">[Feature]Controller.java</span> <span class="comment">— @RestController</span><br>
+            <span class="dto">[Feature]Request.java</span> <span class="tag tag--dto">request</span><br>
+            <span class="dto">[Feature]Response.java</span> <span class="tag tag--dto">response</span><br>
+            <span class="file">[Feature]WebMapper.java</span>
+          </div>
+        </div>
+
+        <div class="tree-card">
+          <div class="tree-card-title"><div class="dot" style="background:var(--blue)"></div>shared/</div>
+          <div class="tree">
+            <span class="file">GlobalExceptionHandler.java</span> <span class="comment">— @ControllerAdvice</span><br>
+            <span class="dto">ApiErrorResponse.java</span> <span class="comment">— formato padrão de erro</span><br>
+            <span class="dto">PageResponse.java</span> <span class="comment">— wrapper paginação REST</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="callout blue">
+        <strong>Fluxo Request → Command → Domain → Response:</strong> O Controller recebe <code>CreateExpeditionRequest</code>
+        (DTO HTTP com <code>@NotBlank</code>), o <code>WebMapper</code> converte para <code>CreateExpeditionCommand</code>
+        (application), passa para o use case, e na volta mapeia Domain → <code>ExpeditionResponse</code>.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ ADAPTER OUT ═══════════════ -->
+  <div class="section">
+    <div class="section-header" onclick="toggle('adapter-out')">
+      <div class="section-icon" style="background:var(--spruce-light);color:var(--spruce);">📤</div>
+      <span class="section-title" style="color:var(--spruce);">adapter/out/</span>
+      <span class="section-desc">Driven Adapters — persistência, storage, eventos</span>
+      <span class="section-chevron open" id="chev-adapter-out">▶</span>
+    </div>
+    <div id="content-adapter-out">
+      <div class="tree-grid">
+
+        <div class="tree-card">
+          <div class="tree-card-title"><div class="dot" style="background:var(--spruce)"></div>persistence/expedition/</div>
+          <div class="tree">
+            <span class="file">ExpeditionJpaEntity.java</span> <span class="tag tag--jpa">@Entity</span><br>
+            <span class="file">ExpeditionJpaRepository.java</span> <span class="comment">— extends JpaRepository</span><br>
+            <span class="impl">ExpeditionPersistenceAdapter.java</span> <span class="comment">— implementa out-port</span><br>
+            <span class="file">ExpeditionPersistenceMapper.java</span> <span class="comment">— Domain ↔ JPA Entity</span>
+          </div>
+        </div>
+
+        <div class="tree-card">
+          <div class="tree-card-title"><div class="dot" style="background:var(--spruce)"></div>persistence/ (demais features)</div>
+          <div class="tree">
+            <span class="dir">media/</span> <span class="comment">— JpaEntity + JpaRepo + Adapter + PersistenceMapper</span><br>
+            <span class="dir">gpstrack/</span> <span class="comment">— mesmo padrão</span><br>
+            <span class="dir">ropeteam/</span><br>
+            <span class="dir">story/</span><br>
+            <span class="dir">user/</span>
+          </div>
+        </div>
+
+        <div class="tree-card">
+          <div class="tree-card-title"><div class="dot" style="background:var(--spruce)"></div>storage/s3/</div>
+          <div class="tree">
+            <span class="impl">S3StorageAdapter.java</span> <span class="comment">— implementa FileStoragePort</span><br>
+            <span class="file">S3Properties.java</span> <span class="comment">— @ConfigurationProperties</span>
+          </div>
+        </div>
+
+        <div class="tree-card">
+          <div class="tree-card-title"><div class="dot" style="background:var(--spruce)"></div>event/spring/</div>
+          <div class="tree">
+            <span class="impl">SpringEventPublisherAdapter.java</span> <span class="comment">— implementa ExpeditionEventPublisher</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="callout spruce">
+        <strong>2 Mappers por feature:</strong> O <code>WebMapper</code> (adapter/in) converte Request ↔ Command e Domain ↔ Response.
+        O <code>PersistenceMapper</code> (adapter/out) converte Domain ↔ JPA Entity.
+        Nenhum mapper mora no domain ou application.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ CONFIG ═══════════════ -->
+  <div class="section">
+    <div class="section-header" onclick="toggle('config')">
+      <div class="section-icon" style="background:var(--purple-light);color:var(--purple);">⚙️</div>
+      <span class="section-title" style="color:var(--purple);">config/</span>
+      <span class="section-desc">Wiring, segurança e infraestrutura Spring</span>
+      <span class="section-chevron open" id="chev-config">▶</span>
+    </div>
+    <div id="content-config">
+      <div class="tree-grid">
+
+        <div class="tree-card">
+          <div class="tree-card-title"><div class="dot" style="background:var(--purple)"></div>config/</div>
+          <div class="tree">
+            <span class="file">SecurityConfig.java</span> <span class="tag tag--config">security</span> <span class="comment">— Auth0 JWT</span><br>
+            <span class="file">CorsConfig.java</span> <span class="tag tag--config">config</span><br>
+            <span class="file">JacksonConfig.java</span> <span class="tag tag--config">config</span><br>
+            <span class="file">S3Config.java</span> <span class="tag tag--config">config</span> <span class="comment">— Bean do S3Client</span><br>
+            <span class="file">BeanConfig.java</span> <span class="tag tag--config">wiring</span> <span class="comment">— conecta Services ↔ Ports</span><br>
+            <span class="file">OpenApiConfig.java</span> <span class="tag tag--config">config</span>
+          </div>
+        </div>
+
+        <div class="tree-card">
+          <div class="tree-card-title"><div class="dot" style="background:var(--purple)"></div>BeanConfig.java — exemplo</div>
+          <div class="tree" style="background:var(--purple-light);padding:12px;border-radius:6px;line-height:2;">
+            <span class="comment">// Services são POJOs — wiring manual via @Bean</span><br>
+            <span style="color:var(--purple)">@Bean</span><br>
+            ExpeditionService expeditionService(<br>
+            <span class="indent" style="border-color:var(--purple);opacity:0.3">
+              ExpeditionRepository repo,<br>
+              ExpeditionEventPublisher events
+            </span>
+            ) {<br>
+            <span class="indent" style="border-color:var(--purple);opacity:0.3">
+              <span style="color:var(--spruce)">return new</span> ExpeditionService(repo, events);
+            </span>
+            }
+          </div>
+        </div>
+
+      </div>
+
+      <div class="callout purple">
+        <strong>Por que wiring manual?</strong> Os Services no <code>application/</code> são POJOs sem <code>@Service</code>
+        — mantendo a camada livre de Spring. O <code>BeanConfig</code> é o único lugar que conhece tanto os ports quanto
+        as implementações concretas, conectando tudo via construtor.
+      </div>
+    </div>
+  </div>
+
+  <!-- Root -->
+  <div class="section">
+    <div class="section-header" style="cursor:default;">
+      <div class="section-icon" style="background:var(--bg);color:var(--text-muted);border:1px solid var(--border);">📦</div>
+      <span class="section-title" style="color:var(--text-muted);">raiz — TtrilhaApplication.java</span>
+    </div>
+  </div>
+
+  <div class="footer">
+    com.ttrilha.api · domain → application → adapter · Spring Boot 3.4 · Java 21
+  </div>
+
+</div>
+
+<script>
+function toggle(id) {
+  const content = document.getElementById('content-' + id);
+  const chevron = document.getElementById('chev-' + id);
+  if (!content || !chevron) return;
+  if (content.style.display === 'none') {
+    content.style.display = 'block';
+    chevron.classList.add('open');
+  } else {
+    content.style.display = 'none';
+    chevron.classList.remove('open');
+  }
+}
+</script>
+</body>
+</html>
