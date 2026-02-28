@@ -1,5 +1,22 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/trilha
-    username: trilha
-    password: trilha
+    url: ${DB_URL}
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USER}
+    password: ${DB_PASS}
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+
+management:
+  otlp:
+    tracing:
+      endpoint: http://localhost:4318/v1/traces   # Tempo OTLP HTTP port
+  tracing:
+    sampling:
+      probability: 1.0
+
+loki4j:
+  url: http://localhost:3100   # Loki push API

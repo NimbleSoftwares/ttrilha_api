@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Property resolution from Spring Environment -->
+    <springProperty scope="context" name="app.name" source="spring.application.name" defaultValue="ttrilha-api"/>
+    <springProperty scope="context" name="loki.url" source="loki4j.url" defaultValue="http://localhost:3100"/>
+
+    <!-- Console appender: JSON structured format -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <timestampPattern>yyyy-MM-dd'T'HH:mm:ss.SSS'Z'</timestampPattern>
+            <fieldName>@timestamp</fieldName>
+            <customFields>{"app":"${app.name}"}</customFields>
+        </encoder>
+    </appender>
+
+    <!-- Loki appender: HTTP push to Loki -->
+    <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+        <http>
+            <url>${loki.url}/loki/api/v1/push</url>
+        </http>
+        <format>
+            <label>
+                <pattern>app=${app.name},level=%level</pattern>
+            </label>
+            <message>
+                <pattern>%logger{20} - %msg</pattern>
+            </message>
+        </format>
+    </appender>
+
+    <!-- Root logger: INFO level, both appenders -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="LOKI"/>
+    </root>
+
+    <!-- Application loggers -->
+    <logger name="com.nimblesoftwares.ttrilha_api" level="DEBUG"/>
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="org.springframework.security" level="INFO"/>
+    <logger name="io.micrometer" level="INFO"/>
+    <logger name="io.opentelemetry" level="INFO"/>
+
+</configuration>

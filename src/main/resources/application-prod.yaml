@@ -3,3 +3,8 @@ spring:
     url: ${DB_URL}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
+
+management:
+  tracing:
+    sampling:
+      probability: 0.1

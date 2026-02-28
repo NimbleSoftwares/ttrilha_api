@@ -4,6 +4,14 @@ spring:
   config:
     import: optional:file:.env[.properties]
 
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    flyway:
+      locations: classpath:db/migration
+      enabled: true
+    open-in-view: false
+
   security:
     oauth2:
       resourceserver:
@@ -14,9 +22,6 @@ spring:
     problemdetails:
       enabled: true
 
-  jpa:
-    open-in-view: false
-
 springdoc:
   api-docs:
     path: /api-docs
@@ -24,6 +29,16 @@ springdoc:
     path: /swagger-ui.html
     operations-sorter: method
     tags-sorter: alpha
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus, metrics
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true   # enables histogram for P50/P95/P99
 
 logging:
   pattern:

@@ -5,14 +5,18 @@ spring:
     username: ${DB_USER}
     password: ${DB_PASS}
 
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    flyway:
-      locations: classpath:db/migration
-      enabled: true
-
 logging:
   level:
     org.springframework.web: DEBUG
     org.springframework.security: DEBUG
+
+management:
+  otlp:
+    tracing:
+      endpoint: http://localhost:4318/v1/traces   # Tempo OTLP HTTP port
+  tracing:
+    sampling:
+      probability: 1.0
+
+loki4j:
+  url: http://localhost:3100   # Loki push API
