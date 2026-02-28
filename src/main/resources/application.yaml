@@ -17,6 +17,14 @@ spring:
   jpa:
     open-in-view: false
 
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+
 logging:
   pattern:
     console: "%clr(%d{HH:mm:ss.SSS}){faint} %clr(%5p) [%X{traceId},%X{spanId}] %clr([%15.15t]){faint} %clr(%-40.40logger{36}){cyan} - %m%n%wEx"

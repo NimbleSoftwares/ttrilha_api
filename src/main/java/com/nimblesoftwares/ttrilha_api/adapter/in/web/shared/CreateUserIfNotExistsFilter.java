@@ -26,7 +26,14 @@ public class CreateUserIfNotExistsFilter extends OncePerRequestFilter {
 
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) {
-    return request.getRequestURI().equals("/api/v1/users/sync");
+    String uri = request.getRequestURI();
+    return uri.equals("/api/v1/users/sync")
+        || uri.startsWith("/actuator")
+        || uri.startsWith("/swagger-ui")
+        || uri.startsWith("/v3/api-docs")
+        || uri.startsWith("/api-docs")
+        || uri.startsWith("/webjars")
+        || uri.equals("/");
   }
 
   @Override
