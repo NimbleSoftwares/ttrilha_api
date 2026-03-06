@@ -1,9 +1,9 @@
 spring:
   datasource:
-    url: ${DB_URL}
+    url: jdbc:postgresql://localhost:5432/ttrilha
     driver-class-name: org.postgresql.Driver
-    username: ${DB_USER}
-    password: ${DB_PASS}
+    username: ttrilha_user
+    password: ttrilha_pass
   data:
     redis:
       host: localhost

@@ -5,8 +5,9 @@ CREATE TABLE IF NOT EXISTS trails (
     name VARCHAR(255),
     difficulty VARCHAR(50),
 
-    geometry GEOGRAPHY(LineStringZ, 4326),
-    distance_meters DOUBLE PRECISION,
+    tags JSONB,
+    geometry GEOGRAPHY(LineString, 4326),
+    distance_meters DOUBLE PRECISION GENERATED ALWAYS AS (ST_Length(geometry)) STORED,
     elevation_gain DOUBLE PRECISION,
 
     created_at TIMESTAMPTZ DEFAULT NOW(),

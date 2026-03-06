@@ -34,7 +34,8 @@ public class SaveTrailFromOverpassService implements SaveTrailUseCase {
 
     Trail trail = new Trail();
     trail.setOsmId(command.id());
-    trail.setName(command.tags().getOrDefault("name", "Unnamed"));
+    trail.setName(command.name());
+    trail.setTags(command.tags());
     trail.setGeometry(simplified);
 
     return trailRepositoryPort.save(trail);

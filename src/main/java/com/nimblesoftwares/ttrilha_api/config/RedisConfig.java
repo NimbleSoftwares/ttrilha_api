@@ -1,6 +1,7 @@
 package com.nimblesoftwares.ttrilha_api.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimblesoftwares.ttrilha_api.application.trail.dto.ExploreTrailResult;
 import com.nimblesoftwares.ttrilha_api.application.trail.port.out.GeocodingPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +32,15 @@ public class RedisConfig {
                 RedisSerializationContext.SerializationPair.fromSerializer(
                     new GenericJackson2JsonRedisSerializer(objectMapper)));
 
+    RedisCacheConfiguration overpassConfig =
+        RedisCacheConfiguration.defaultCacheConfig()
+            .serializeKeysWith(
+                RedisSerializationContext.SerializationPair.fromSerializer(
+                    new StringRedisSerializer()))
+            .serializeValuesWith(
+                RedisSerializationContext.SerializationPair.fromSerializer(
+                    new Jackson2JsonRedisSerializer<>(ExploreTrailResult.class)));
+
     RedisCacheConfiguration geoConfig =
         RedisCacheConfiguration.defaultCacheConfig()
             .serializeKeysWith(
@@ -41,13 +51,13 @@ public class RedisConfig {
                     new Jackson2JsonRedisSerializer<>(GeocodingPort.LatLon.class)));
 
     return RedisCacheManager.builder(connectionFactory)
-        .cacheDefaults(defaultConfig.entryTtl(Duration.ofHours(4)))
+        .cacheDefaults(defaultConfig.entryTtl(Duration.ofMinutes(5)))
         .withCacheConfiguration(
             "geocoding-results",
             geoConfig.entryTtl(Duration.ofDays(7)))
         .withCacheConfiguration(
             "overpass-trails",
-            defaultConfig.entryTtl(Duration.ofHours(4)))
+            overpassConfig.entryTtl(Duration.ofHours(4)))
         .build();
   }
 }

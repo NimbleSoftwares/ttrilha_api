@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <!-- Property resolution from Spring Environment -->
+
+    <!-- Spring properties -->
     <springProperty scope="context" name="app.name" source="spring.application.name" defaultValue="ttrilha-api"/>
     <springProperty scope="context" name="loki.url" source="loki4j.url" defaultValue="http://localhost:3100"/>
 
-    <!-- Console appender: JSON structured format -->
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <!-- DEV console -->
+    <appender name="CONSOLE_DEV" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- PROD console JSON -->
+    <appender name="CONSOLE_JSON" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <timestampPattern>yyyy-MM-dd'T'HH:mm:ss.SSS'Z'</timestampPattern>
             <fieldName>@timestamp</fieldName>
@@ -13,7 +21,7 @@
         </encoder>
     </appender>
 
-    <!-- Loki appender: HTTP push to Loki -->
+    <!-- Loki -->
     <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
         <http>
             <url>${loki.url}/loki/api/v1/push</url>
@@ -28,11 +36,20 @@
         </format>
     </appender>
 
-    <!-- Root logger: INFO level, both appenders -->
-    <root level="INFO">
-        <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="LOKI"/>
-    </root>
+    <!-- DEV profile -->
+    <springProfile name="dev">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE_DEV"/>
+        </root>
+    </springProfile>
+
+    <!-- QUANDO NAO FOR DEV -->
+    <springProfile name="!dev">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE_JSON"/>
+            <appender-ref ref="LOKI"/>
+        </root>
+    </springProfile>
 
     <!-- Application loggers -->
     <logger name="com.nimblesoftwares.ttrilha_api" level="DEBUG"/>

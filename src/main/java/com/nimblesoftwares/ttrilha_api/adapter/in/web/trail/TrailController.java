@@ -2,7 +2,8 @@ package com.nimblesoftwares.ttrilha_api.adapter.in.web.trail;
 
 import com.nimblesoftwares.ttrilha_api.adapter.in.web.trail.dto.CreateTrailRequest;
 import com.nimblesoftwares.ttrilha_api.adapter.in.web.trail.dto.ExploreTrailRequest;
-import com.nimblesoftwares.ttrilha_api.adapter.out.trail.dto.OverpassResponse;
+import com.nimblesoftwares.ttrilha_api.adapter.in.web.trail.dto.ExploreTrailResponse;
+import com.nimblesoftwares.ttrilha_api.application.trail.dto.ExploreTrailResult;
 import com.nimblesoftwares.ttrilha_api.application.trail.port.in.ExploreTrailsUsecase;
 import com.nimblesoftwares.ttrilha_api.application.trail.port.in.SaveTrailUseCase;
 import jakarta.validation.Valid;
@@ -29,13 +30,11 @@ public class TrailController {
   }
 
   @PostMapping("/explore")
-  public ResponseEntity<OverpassResponse> explore(@Valid @RequestBody ExploreTrailRequest request) {
+  public ResponseEntity<ExploreTrailResponse> explore(@Valid @RequestBody ExploreTrailRequest request) {
 
-    OverpassResponse result = exploreTrailsUsecase.execute(request.toCommand());
+    ExploreTrailResult result = exploreTrailsUsecase.execute(request.toCommand());
 
-    //ExploreTrailResponse response = ExploreTrailResponse.fromResult(result);
-
-    return ResponseEntity.ok().body(result);
+    return ResponseEntity.ok().body(new ExploreTrailResponse(result));
   }
 
   @PostMapping

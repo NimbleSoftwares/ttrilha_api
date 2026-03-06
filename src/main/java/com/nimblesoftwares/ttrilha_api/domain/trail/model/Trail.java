@@ -3,6 +3,7 @@ package com.nimblesoftwares.ttrilha_api.domain.trail.model;
 import org.locationtech.jts.geom.LineString;
 
 import java.time.OffsetDateTime;
+import java.util.Map;
 import java.util.UUID;
 
 public class Trail {
@@ -10,6 +11,7 @@ public class Trail {
   private UUID id;
   private Long osmId;
   private String name;
+  private Map<String, String> tags;
   private String difficulty;
   private UUID createdByUserId;
   private Double distanceMeters;
@@ -98,5 +100,13 @@ public class Trail {
 
   public void setGeometry(LineString geometry) {
     this.geometry = geometry;
+  }
+
+  public Map<String, String> getTags() {
+    return tags;
+  }
+
+  public void setTags(Map<String, String> tags) {
+    this.tags = tags;
   }
 }

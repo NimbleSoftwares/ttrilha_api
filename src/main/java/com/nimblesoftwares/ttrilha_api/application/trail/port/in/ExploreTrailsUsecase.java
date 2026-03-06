@@ -1,9 +1,9 @@
 package com.nimblesoftwares.ttrilha_api.application.trail.port.in;
 
-import com.nimblesoftwares.ttrilha_api.adapter.out.trail.dto.OverpassResponse;
 import com.nimblesoftwares.ttrilha_api.application.trail.command.ExploreTrailCommand;
+import com.nimblesoftwares.ttrilha_api.application.trail.dto.ExploreTrailResult;
 
 public interface ExploreTrailsUsecase {
 
-  OverpassResponse execute(ExploreTrailCommand command);
+  ExploreTrailResult execute(ExploreTrailCommand command);
 }

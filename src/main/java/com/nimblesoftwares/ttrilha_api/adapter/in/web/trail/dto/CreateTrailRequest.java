@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Map;
 
 public record CreateTrailRequest(
-    String type,
     Long id,
+    String name,
     Map<String, String> tags,
     List<GeoPoint> geometry
 ) {
 
   public SaveTrailCommand toCommand() {
-    return new SaveTrailCommand(type, id, tags, geometry);
+    return new SaveTrailCommand(name, id, tags, geometry);
   }
 }

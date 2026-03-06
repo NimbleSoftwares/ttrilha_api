@@ -1,12 +1,15 @@
 package com.nimblesoftwares.ttrilha_api.adapter.out.persistence.trail.entities;
 
+import com.vladmihalcea.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Type;
 import org.locationtech.jts.geom.LineString;
 
 import java.time.OffsetDateTime;
+import java.util.Map;
 import java.util.UUID;
 
 @Getter
@@ -22,22 +25,26 @@ public class TrailEntity {
   private LineString geometry;
 
   @ColumnDefault("now()")
-  @Column(name = "updated_at")
+  @Column(name = "updated_at", insertable = false, updatable = false)
   private OffsetDateTime updatedAt;
 
   @ColumnDefault("now()")
-  @Column(name = "created_at")
+  @Column(name = "created_at", insertable = false, updatable = false)
   private OffsetDateTime createdAt;
 
   @Column(name = "elevation_gain")
   private Double elevationGain;
 
-  @Column(name = "distance_meters")
+  @Column(name = "distance_meters", insertable = false, updatable = false)
   private Double distanceMeters;
 
   @Size(max = 50)
   @Column(name = "difficulty", length = 50)
   private String difficulty;
+
+  @Type(JsonType.class)
+  @Column(name = "tags", columnDefinition = "jsonb")
+  private Map<String, String> tags;
 
   @Size(max = 255)
   @Column(name = "name")
@@ -53,5 +60,4 @@ public class TrailEntity {
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id", nullable = false)
   private UUID id;
-
 }

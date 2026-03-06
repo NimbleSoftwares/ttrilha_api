@@ -1,4 +1,4 @@
-package com.nimblesoftwares.ttrilha_api.application.trail.result;
+package com.nimblesoftwares.ttrilha_api.application.trail.dto;
 
 import com.nimblesoftwares.ttrilha_api.domain.trail.model.GeoPoint;
 
@@ -7,6 +7,7 @@ import java.util.Map;
 
 public record OverpassTrailData(
     Long osmId,
+    String name,
     Map<String, String> tags,
     List<GeoPoint> geometry
 ) {}

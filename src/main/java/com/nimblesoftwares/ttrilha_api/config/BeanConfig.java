@@ -1,6 +1,5 @@
 package com.nimblesoftwares.ttrilha_api.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimblesoftwares.ttrilha_api.adapter.out.persistence.trail.mapper.LineStringMapper;
 import com.nimblesoftwares.ttrilha_api.adapter.out.trail.GeocodingClient;
 import com.nimblesoftwares.ttrilha_api.adapter.out.trail.OverpassClient;
@@ -37,10 +36,9 @@ public class BeanConfig {
 
   @Bean
   public ExploreTrailsService exploreTrailsService(
-      ObjectMapper objectMapper,
       GeocodingPort geocodingPort,
       OverpassPort overpassPort) {
-    return new ExploreTrailsService(objectMapper, overpassPort, geocodingPort);
+    return new ExploreTrailsService(overpassPort, geocodingPort);
   }
 
   @Bean

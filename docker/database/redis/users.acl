@@ -1,2 +1,2 @@
 user default off
-user ttrilha_app on >ttrilha123 ~* +@read +@write +@connection
+user ttrilha_app on >ttrilha123 allcommands allkeys +@read +@write +@connection

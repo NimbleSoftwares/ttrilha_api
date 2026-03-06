@@ -11,6 +11,7 @@ public class TrailMapper {
     return TrailEntity.builder()
         .name(trail.getName())
         .osmId(trail.getOsmId())
+        .tags(trail.getTags())
         .difficulty(trail.getDifficulty())
         .elevationGain(trail.getElevationGain())
         .distanceMeters(trail.getDistanceMeters())
@@ -23,6 +24,7 @@ public class TrailMapper {
     trail.setId(trailEntity.getId());
     trail.setName(trailEntity.getName());
     trail.setOsmId(trailEntity.getOsmId());
+    trail.setTags(trailEntity.getTags());
     trail.setDifficulty(trailEntity.getDifficulty());
     trail.setElevationGain(trailEntity.getElevationGain());
     trail.setDistanceMeters(trailEntity.getDistanceMeters());

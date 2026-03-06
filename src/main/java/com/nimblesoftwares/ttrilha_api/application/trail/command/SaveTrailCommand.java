@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public record SaveTrailCommand(
-    String type,
+    String name,
     Long id,
     Map<String, String> tags,
     List<GeoPoint> geometry
