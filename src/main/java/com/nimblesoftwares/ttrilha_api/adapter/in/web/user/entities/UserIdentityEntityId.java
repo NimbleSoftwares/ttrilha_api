@@ -1,6 +1,6 @@
 package com.nimblesoftwares.ttrilha_api.adapter.in.web.user.entities;
 
-import com.nimblesoftwares.ttrilha_api.domain.user.enums.ProviderEnum;
+import com.nimblesoftwares.ttrilha_api.domain.user.model.ProviderEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;

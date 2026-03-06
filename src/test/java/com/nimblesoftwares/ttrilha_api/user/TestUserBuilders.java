@@ -2,7 +2,7 @@ package com.nimblesoftwares.ttrilha_api.user;
 
 import com.nimblesoftwares.ttrilha_api.adapter.in.web.user.dto.SaveUserRequest;
 import com.nimblesoftwares.ttrilha_api.application.user.command.SaveUserCommand;
-import com.nimblesoftwares.ttrilha_api.domain.user.enums.ProviderEnum;
+import com.nimblesoftwares.ttrilha_api.domain.user.model.ProviderEnum;
 import com.nimblesoftwares.ttrilha_api.domain.user.model.User;
 import com.nimblesoftwares.ttrilha_api.domain.user.model.UserIdentity;
 import com.nimblesoftwares.ttrilha_api.domain.user.model.UserIdentityId;

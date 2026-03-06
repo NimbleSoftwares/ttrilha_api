@@ -40,6 +40,7 @@ public class SecurityConfig {
               .requestMatchers("/v3/api-docs/**").permitAll()
               .requestMatchers("/api-docs/**").permitAll()
               .requestMatchers("/webjars/**").permitAll()
+              .requestMatchers("/api/v1/trails/**").permitAll()
               .anyRequest().authenticated())
           .oauth2ResourceServer(oauth2 -> oauth2.jwt(
               Customizer.withDefaults()))

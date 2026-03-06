@@ -741,6 +741,19 @@
         Os <strong>Ports</strong> definem contratos com o mundo externo (in = quem chama, out = quem é chamado).
         Pode importar <code>domain</code>, mas <strong>nunca</strong> importa <code>adapter</code>.
       </div>
+
+      <div class="callout purple" style="margin-top: 24px;">
+        <strong>📌 Nota importante:</strong> A <code>application/</code> contém <strong>apenas</strong>:
+        <ul style="margin-top: 8px; margin-left: 20px;">
+          <li><strong>Ports (interfaces)</strong> — <code>port/in/</code> (in-ports) e <code>port/out/</code> (out-ports)</li>
+          <li><strong>Commands</strong> — <code>command/</code> (DTOs de entrada para use cases)</li>
+          <li><strong>Results</strong> — <code>result/</code> (DTOs de saída de use cases e out-ports)</li>
+        </ul>
+        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.1);">
+          <strong>As implementações de Services/UseCases ficam em <code>adapter/in/</code></strong> como POJOs plain (sem @Service).
+          Exemplo: <code>adapter/in/trail/usecase/ExploreTrailsUseCase.java</code> implementa <code>application/trail/port/in/ExploreTrailsUsecase.java</code>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -803,6 +816,16 @@
         (DTO HTTP com <code>@NotBlank</code>), o <code>WebMapper</code> converte para <code>CreateExpeditionCommand</code>
         (application), passa para o use case, e na volta mapeia Domain → <code>ExpeditionResponse</code>.
       </div>
+
+      <div class="callout blue" style="margin-top: 12px;">
+        <strong>📋 Regra de DTOs na camada HTTP:</strong>
+        <ul style="margin-top: 8px; margin-left: 20px;">
+          <li><strong>Request DTOs</strong> — decorações HTTP (@NotBlank, @Valid, @JsonProperty) — ficam em <code>adapter/in/web/[feature]/dto/</code></li>
+          <li><strong>Response DTOs</strong> — serialização HTTP — ficam em <code>adapter/in/web/[feature]/dto/</code></li>
+          <li><strong>Mapeamento simples</strong> (1:1 sem dependências) — método na própria classe (<code>Request.toCommand()</code>, <code>Response.fromDomain()</code>)</li>
+          <li><strong>Mapeamento complexo</strong> (com injeção de dependências) — classe dedicada em <code>adapter/in/web/[feature]/mapper/[Feature]WebMapper.java</code></li>
+        </ul>
+      </div>
     </div>
   </div>
 
@@ -856,9 +879,26 @@
       </div>
 
       <div class="callout spruce">
-        <strong>2 Mappers por feature:</strong> O <code>WebMapper</code> (adapter/in) converte Request ↔ Command e Domain ↔ Response.
-        O <code>PersistenceMapper</code> (adapter/out) converte Domain ↔ JPA Entity.
-        Nenhum mapper mora no domain ou application.
+        <strong>🎯 Mappers por camada:</strong>
+        <ul style="margin-top: 8px; margin-left: 20px;">
+          <li><strong>WebMapper</strong> (adapter/in/web/[feature]/mapper) — Request/Response ↔ Command/Domain</li>
+          <li><strong>PersistenceMapper</strong> (adapter/out/persistence/[feature]/mapper) — Domain ↔ JPA Entity</li>
+          <li><strong>External API Mappers</strong> (adapter/out/[service]/mapper) — Wire DTO → Boundary object (ex: <code>OverpassElement</code> → <code>OverpassTrailData</code>)</li>
+          <li><strong>Technical Mappers</strong> (adapter/out/persistence/[feature]/mapper) — Ex: <code>LineStringMapper</code> (GeoPoint → JTS LineString). <strong>Nunca</strong> na application layer!</li>
+        </ul>
+        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.1);">
+          <strong>Regra geral:</strong> Mappers vivem no adapter que "conhece" ambos os tipos.
+          Domain não mapeiam nada. Application não mapeiam tipos de infraestrutura (JTS, JPA, etc).
+        </div>
+      </div>
+
+      <div class="callout spruce" style="margin-top: 12px;">
+        <strong>📋 DTOs externos (External APIs):</strong>
+        <ul style="margin-top: 8px; margin-left: 20px;">
+          <li><strong>Wire DTOs</strong> (JSON deserialization) — <code>adapter/out/[service]/</code> com annotations Jackson (@JsonIgnoreProperties, etc)</li>
+          <li><strong>Boundary objects</strong> — <code>application/trail/result/</code> (ex: <code>OverpassTrailData</code>) — application vê isto, nunca vê o wire DTO</li>
+          <li><strong>Mapeamento</strong> — Dentro do Adapter (ex: <code>OverpassClient</code>) antes de cruzar a porta. Não tem mapper classe separada se for lógica simples.</li>
+        </ul>
       </div>
     </div>
   </div>

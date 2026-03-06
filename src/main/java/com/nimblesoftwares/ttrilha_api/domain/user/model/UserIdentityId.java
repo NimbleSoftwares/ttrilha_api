@@ -1,7 +1,5 @@
 package com.nimblesoftwares.ttrilha_api.domain.user.model;
 
-import com.nimblesoftwares.ttrilha_api.domain.user.enums.ProviderEnum;
-
 import java.util.UUID;
 
 public class UserIdentityId {

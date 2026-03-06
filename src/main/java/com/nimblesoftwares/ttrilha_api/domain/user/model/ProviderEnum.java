@@ -1,4 +1,4 @@
-package com.nimblesoftwares.ttrilha_api.domain.user.enums;
+package com.nimblesoftwares.ttrilha_api.domain.user.model;
 
 import com.nimblesoftwares.ttrilha_api.domain.user.exception.InvalidProviderException;
 

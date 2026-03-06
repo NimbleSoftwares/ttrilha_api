@@ -47,3 +47,7 @@ logging:
 
 auth0:
   audience: https://${AUTH0_API_AUDIENCE}/
+
+overpass:
+  baseUrl: https://overpass-api.de/api
+

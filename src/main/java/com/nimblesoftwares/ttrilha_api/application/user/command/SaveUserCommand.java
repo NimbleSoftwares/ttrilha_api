@@ -1,6 +1,6 @@
 package com.nimblesoftwares.ttrilha_api.application.user.command;
 
-import com.nimblesoftwares.ttrilha_api.domain.user.enums.ProviderEnum;
+import com.nimblesoftwares.ttrilha_api.domain.user.model.ProviderEnum;
 import com.nimblesoftwares.ttrilha_api.domain.user.model.User;
 import com.nimblesoftwares.ttrilha_api.domain.user.model.UserIdentity;
 import com.nimblesoftwares.ttrilha_api.domain.user.model.UserIdentityId;

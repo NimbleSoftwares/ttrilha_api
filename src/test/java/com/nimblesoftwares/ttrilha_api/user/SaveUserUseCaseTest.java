@@ -1,11 +1,11 @@
 package com.nimblesoftwares.ttrilha_api.user;
 
-import com.nimblesoftwares.ttrilha_api.adapter.in.web.user.service.SaveUserService;
 import com.nimblesoftwares.ttrilha_api.application.user.command.SaveUserCommand;
 import com.nimblesoftwares.ttrilha_api.application.user.exception.UserPersistenceException;
 import com.nimblesoftwares.ttrilha_api.application.user.port.out.UserIdentityRepositoryPort;
 import com.nimblesoftwares.ttrilha_api.application.user.port.out.UserRepositoryPort;
-import com.nimblesoftwares.ttrilha_api.domain.user.enums.ProviderEnum;
+import com.nimblesoftwares.ttrilha_api.application.user.service.SaveUserService;
+import com.nimblesoftwares.ttrilha_api.domain.user.model.ProviderEnum;
 import com.nimblesoftwares.ttrilha_api.domain.user.model.User;
 import com.nimblesoftwares.ttrilha_api.domain.user.model.UserIdentity;
 import org.junit.jupiter.api.DisplayName;

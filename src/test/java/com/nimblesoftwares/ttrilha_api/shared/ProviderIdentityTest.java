@@ -1,8 +1,8 @@
 package com.nimblesoftwares.ttrilha_api.shared;
 
 import com.nimblesoftwares.ttrilha_api.adapter.in.web.shared.ProviderIdentity;
-import com.nimblesoftwares.ttrilha_api.domain.user.enums.ProviderEnum;
 import com.nimblesoftwares.ttrilha_api.domain.user.exception.InvalidProviderException;
+import com.nimblesoftwares.ttrilha_api.domain.user.model.ProviderEnum;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

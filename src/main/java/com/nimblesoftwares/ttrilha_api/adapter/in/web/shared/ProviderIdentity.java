@@ -1,7 +1,7 @@
 package com.nimblesoftwares.ttrilha_api.adapter.in.web.shared;
 
-import com.nimblesoftwares.ttrilha_api.domain.user.enums.ProviderEnum;
 import com.nimblesoftwares.ttrilha_api.domain.user.exception.InvalidProviderException;
+import com.nimblesoftwares.ttrilha_api.domain.user.model.ProviderEnum;
 
 public record ProviderIdentity(ProviderEnum provider, String providerUserId) {
 

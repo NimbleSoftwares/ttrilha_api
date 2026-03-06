@@ -1,4 +1,4 @@
-package com.nimblesoftwares.ttrilha_api.adapter.in.web.user.service;
+package com.nimblesoftwares.ttrilha_api.application.user.service;
 
 import com.nimblesoftwares.ttrilha_api.application.user.command.SaveUserCommand;
 import com.nimblesoftwares.ttrilha_api.application.user.port.in.SaveUserUseCase;
@@ -7,12 +7,10 @@ import com.nimblesoftwares.ttrilha_api.application.user.port.out.UserRepositoryP
 import com.nimblesoftwares.ttrilha_api.domain.user.model.User;
 import com.nimblesoftwares.ttrilha_api.domain.user.model.UserIdentity;
 import jakarta.transaction.Transactional;
-import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.UUID;
 
-@Service
 @Transactional
 public class SaveUserService implements SaveUserUseCase {
 
