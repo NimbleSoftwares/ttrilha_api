@@ -58,4 +58,8 @@ public class UserEntity {
   @Column(name = "email", nullable = false, length = 254)
   private String email;
 
+  @Size(max = 30)
+  @Column(name = "username", length = 30)
+  private String username;
+
 }
