@@ -14,6 +14,7 @@ public class User {
   private String firstName;
   private String displayName;
   private String email;
+  private String username;
 
   public User(){}
 
@@ -25,6 +26,15 @@ public class User {
     this.avatarUrl = avatarUrl;
   }
 
+  public User(String email, String displayName, String firstName, String lastName, String avatarUrl, String username) {
+    this.email = email;
+    this.displayName = displayName;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.avatarUrl = avatarUrl;
+    this.username = username;
+  }
+
   public User(UUID id, String email, String displayName, String firstName, String lastName, String avatarUrl, OffsetDateTime createdAt, OffsetDateTime updatedAt, OffsetDateTime deletedAt) {
     this.id = id;
     this.email = email;
@@ -32,6 +42,19 @@ public class User {
     this.firstName = firstName;
     this.lastName = lastName;
     this.avatarUrl = avatarUrl;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+    this.deletedAt = deletedAt;
+  }
+
+  public User(UUID id, String email, String displayName, String firstName, String lastName, String avatarUrl, String username, OffsetDateTime createdAt, OffsetDateTime updatedAt, OffsetDateTime deletedAt) {
+    this.id = id;
+    this.email = email;
+    this.displayName = displayName;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.avatarUrl = avatarUrl;
+    this.username = username;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.deletedAt = deletedAt;
@@ -107,6 +130,14 @@ public class User {
 
   public void setEmail(String email) {
     this.email = email;
+  }
+
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername(String username) {
+    this.username = username;
   }
 
 }

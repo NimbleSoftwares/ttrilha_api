@@ -22,6 +22,10 @@
 			<email>dev.luanmarcene@gmail.com</email>
 			<name>Luan Marcene</name>
 		</developer>
+        <developer>
+            <email>odirleikempfer.dev@gmail.com</email>
+            <name>Odirlei Kempfer</name>
+        </developer>
 	</developers>
 	<scm>
 		<connection/>

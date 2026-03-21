@@ -46,4 +46,13 @@ public class UserJpaRepositoryAdapter implements UserRepositoryPort {
       throw new UserPersistenceException("An error occurred. Please try again.");
     }
   }
+
+  @Override
+  public Optional<User> findByUsername(String username) {
+    try {
+      return userJpaRepository.findByUsername(username).map(mapper::toDomain);
+    } catch (JpaSystemException e) {
+      throw new UserPersistenceException("An error occurred. Please try again.");
+    }
+  }
 }

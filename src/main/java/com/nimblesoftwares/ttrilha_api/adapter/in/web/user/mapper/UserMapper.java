@@ -18,6 +18,7 @@ public class UserMapper {
         .lastName(user.getLastName())
         .firstName(user.getFirstName())
         .avatarUrl(user.getAvatarUrl())
+        .username(user.getUsername())
         .build();
   }
 
@@ -31,6 +32,7 @@ public class UserMapper {
         userEntity.getFirstName(),
         userEntity.getLastName(),
         userEntity.getAvatarUrl(),
+        userEntity.getUsername(),
         userEntity.getCreatedAt(),
         userEntity.getUpdatedAt(),
         userEntity.getDeletedAt()
