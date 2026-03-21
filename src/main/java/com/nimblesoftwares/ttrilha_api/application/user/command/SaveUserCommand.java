@@ -11,12 +11,13 @@ public record SaveUserCommand(
     String firstName,
     String lastName,
     String avatarUrl,
+    String username,
     ProviderEnum provider,
     String providerUserId
     ) {
 
   public User toUser() {
-    return new User(this.email(), this.displayName(), this.firstName(), this.lastName(), this.avatarUrl());
+    return new User(this.email(), this.displayName(), this.firstName(), this.lastName(), this.avatarUrl(), this.username());
   }
 
   public UserIdentity toUserIdentity(User user) {

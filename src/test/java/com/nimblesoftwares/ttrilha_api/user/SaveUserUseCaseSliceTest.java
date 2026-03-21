@@ -6,6 +6,7 @@ import com.nimblesoftwares.ttrilha_api.adapter.in.web.user.dto.SaveUserRequest;
 import com.nimblesoftwares.ttrilha_api.adapter.in.web.user.dto.SaveUserResponse;
 import com.nimblesoftwares.ttrilha_api.adapter.in.web.user.mapper.UserMapper;
 import com.nimblesoftwares.ttrilha_api.application.user.command.SaveUserCommand;
+import com.nimblesoftwares.ttrilha_api.application.user.port.in.GetUserByUsernameUseCase;
 import com.nimblesoftwares.ttrilha_api.application.user.port.out.UserIdentityRepositoryPort;
 import com.nimblesoftwares.ttrilha_api.application.user.service.SaveUserService;
 import com.nimblesoftwares.ttrilha_api.domain.user.model.ProviderEnum;
@@ -26,6 +27,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
@@ -54,6 +56,9 @@ public class SaveUserUseCaseSliceTest {
 
   @MockitoBean
   SaveUserService saveUserService;
+
+  @MockitoBean
+  GetUserByUsernameUseCase getUserByUsernameUseCase;
 
   private final String BASE_USERS_URL = "/api/v1/users";
   private final String GOOGLE_ID = "12332103213912031321";
@@ -89,6 +94,7 @@ public class SaveUserUseCaseSliceTest {
     assertEquals("Luan",             capturedCommand.firstName());
     assertEquals("Marcene",          capturedCommand.lastName());
     assertEquals("",                 capturedCommand.avatarUrl());
+    assertNull(capturedCommand.username());
     assertEquals(ProviderEnum.GOOGLE, capturedCommand.provider());
     assertEquals(GOOGLE_ID,           capturedCommand.providerUserId());
 

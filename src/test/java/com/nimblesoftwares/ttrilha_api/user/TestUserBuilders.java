@@ -20,7 +20,8 @@ public class TestUserBuilders {
           "testgmail.com",
           "Luan",
           "Marcene",
-          ""
+          "",
+          null
       );
     }
     return new SaveUserRequest(
@@ -28,7 +29,8 @@ public class TestUserBuilders {
         "test@gmail.com",
         "Luan",
         "Marcene",
-        ""
+        "",
+        null
     );
   }
 
@@ -38,6 +40,7 @@ public class TestUserBuilders {
         "DisplayName",
         "FirstName",
         "LastName",
+        null,
         null,
         PROVIDER,
         GOOGLE_ID
