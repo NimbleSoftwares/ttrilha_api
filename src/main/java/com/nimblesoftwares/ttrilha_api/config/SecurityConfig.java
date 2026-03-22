@@ -14,6 +14,11 @@ import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 public class SecurityConfig {
@@ -24,6 +29,9 @@ public class SecurityConfig {
   @Value("${auth0.audience}")
   private String audience;
 
+  @Value("${cors.allowed-origins:*}")
+  private List<String> allowedOrigins;
+
   @Bean
   public SecurityFilterChain securityFilterChain(
       HttpSecurity http,
@@ -31,6 +39,7 @@ public class SecurityConfig {
   ) throws Exception {
 
       return http
+          .cors(cors -> cors.configurationSource(corsConfigurationSource()))
           .csrf(CsrfConfigurer::disable)
           .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
           .authorizeHttpRequests(authorize -> authorize
@@ -46,6 +55,20 @@ public class SecurityConfig {
               Customizer.withDefaults()))
           .addFilterAfter(createUserIfNotExistsFilter, BearerTokenAuthenticationFilter.class)
           .build();
+  }
+
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration config = new CorsConfiguration();
+    config.setAllowedOriginPatterns(allowedOrigins);
+    config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+    config.setAllowedHeaders(List.of("*"));
+    config.setAllowCredentials(true);
+    config.setMaxAge(3600L);
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", config);
+    return source;
   }
 
   @Bean

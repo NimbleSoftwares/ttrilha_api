@@ -18,7 +18,6 @@ import com.nimblesoftwares.ttrilha_api.application.user.port.in.ListPendingInvit
 import com.nimblesoftwares.ttrilha_api.application.user.port.in.RespondFriendshipInviteUseCase;
 import com.nimblesoftwares.ttrilha_api.application.user.port.in.SendFriendshipInviteUseCase;
 import com.nimblesoftwares.ttrilha_api.application.user.port.in.UnblockUserUseCase;
-import com.nimblesoftwares.ttrilha_api.domain.user.model.Friendship;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -158,8 +157,10 @@ public class FriendshipController {
   })
   public ResponseEntity<List<FriendResponse>> listFriends(@AuthenticationPrincipal Jwt jwt) {
     UUID currentUserId = resolveCurrentUserId(jwt);
-    List<Friendship> friends = listFriendsUseCase.execute(currentUserId);
-    List<FriendResponse> response = friends.stream().map(FriendResponse::fromDomain).toList();
+    List<FriendResponse> response = listFriendsUseCase.execute(currentUserId)
+        .stream()
+        .map(FriendResponse::fromDomain)
+        .toList();
     return ResponseEntity.ok(response);
   }
 

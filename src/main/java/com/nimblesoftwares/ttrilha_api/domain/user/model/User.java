@@ -15,6 +15,8 @@ public class User {
   private String displayName;
   private String email;
   private String username;
+  private String city;
+  private String state;
 
   public User(){}
 
@@ -58,6 +60,21 @@ public class User {
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.deletedAt = deletedAt;
+  }
+
+  public User(UUID id, String email, String displayName, String firstName, String lastName, String avatarUrl, String username, OffsetDateTime createdAt, OffsetDateTime updatedAt, OffsetDateTime deletedAt, String city, String state) {
+    this.id = id;
+    this.email = email;
+    this.displayName = displayName;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.avatarUrl = avatarUrl;
+    this.username = username;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+    this.deletedAt = deletedAt;
+    this.city = city;
+    this.state = state;
   }
 
   public UUID getId() {
@@ -138,6 +155,22 @@ public class User {
 
   public void setUsername(String username) {
     this.username = username;
+  }
+
+  public String getCity() {
+    return city;
+  }
+
+  public void setCity(String city) {
+    this.city = city;
+  }
+
+  public String getState() {
+    return state;
+  }
+
+  public void setState(String state) {
+    this.state = state;
   }
 
 }

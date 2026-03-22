@@ -1,15 +1,32 @@
 package com.nimblesoftwares.ttrilha_api.adapter.in.web.friendship.dto;
 
-import com.nimblesoftwares.ttrilha_api.domain.user.model.Friendship;
+import com.nimblesoftwares.ttrilha_api.application.user.dto.FriendResult;
 
 import java.time.OffsetDateTime;
 
-public record FriendResponse(String friendId, OffsetDateTime createdAt) {
+public record FriendResponse(
+    String friendId,
+    String username,
+    String displayName,
+    String firstName,
+    String lastName,
+    String avatarUrl,
+    String city,
+    String state,
+    OffsetDateTime friendsSince
+) {
 
-  public static FriendResponse fromDomain(Friendship friendship) {
+  public static FriendResponse fromDomain(FriendResult result) {
     return new FriendResponse(
-        friendship.getFriendId().toString(),
-        friendship.getCreatedAt()
+        result.friendId().toString(),
+        result.username(),
+        result.displayName(),
+        result.firstName(),
+        result.lastName(),
+        result.avatarUrl(),
+        result.city(),
+        result.state(),
+        result.friendsSince()
     );
   }
 }

@@ -100,8 +100,10 @@ public class BeanConfig {
   }
 
   @Bean
-  public ListFriendsUseCase listFriendsUseCase(FriendshipRepositoryPort friendshipRepository) {
-    return new ListFriendsService(friendshipRepository);
+  public ListFriendsUseCase listFriendsUseCase(
+      FriendshipRepositoryPort friendshipRepository,
+      UserRepositoryPort userRepositoryPort) {
+    return new ListFriendsService(friendshipRepository, userRepositoryPort);
   }
 
   @Bean
