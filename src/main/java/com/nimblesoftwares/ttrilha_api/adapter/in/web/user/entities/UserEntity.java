@@ -62,4 +62,12 @@ public class UserEntity {
   @Column(name = "username", length = 30)
   private String username;
 
+  @Size(max = 100)
+  @Column(name = "city", length = 100)
+  private String city;
+
+  @Size(max = 100)
+  @Column(name = "state", length = 100)
+  private String state;
+
 }
