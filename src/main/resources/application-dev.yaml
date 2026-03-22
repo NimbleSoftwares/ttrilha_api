@@ -12,6 +12,10 @@ spring:
       password: ttrilha123
       key-prefix: ttrilha_app_
 
+cors:
+  allowed-origins:
+    - "*"
+
 logging:
   level:
     org.springframework.web: DEBUG
