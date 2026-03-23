@@ -8,5 +8,5 @@ import java.util.UUID;
 public interface TrailRepositoryPort {
 
   UUID save(Trail trail);
-  Optional<Trail> findByOsmId(Long id);
+  Optional<Trail> findByOsmId(Long osmId);
 }

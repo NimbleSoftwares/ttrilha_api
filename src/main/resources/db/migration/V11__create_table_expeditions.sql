@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS expeditions (
     id                  UUID        NOT NULL DEFAULT gen_random_uuid(),
     title               VARCHAR(255) NOT NULL,
-    trail_id            UUID        NOT NULL,
+    osm_id              BIGINT      NOT NULL,
     start_date          DATE        NOT NULL,
     end_date            DATE        NOT NULL,
     status              VARCHAR(50) NOT NULL DEFAULT 'PLANNED',
@@ -9,8 +9,6 @@ CREATE TABLE IF NOT EXISTS expeditions (
     created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
     CONSTRAINT pk_expeditions PRIMARY KEY (id),
-    CONSTRAINT fk_expeditions_trail
-        FOREIGN KEY (trail_id) REFERENCES trails(id),
     CONSTRAINT fk_expeditions_creator
         FOREIGN KEY (created_by_user_id) REFERENCES users(id)
 );
@@ -28,4 +26,3 @@ CREATE TABLE IF NOT EXISTS expedition_members (
 
 CREATE INDEX idx_expeditions_created_by ON expeditions(created_by_user_id);
 CREATE INDEX idx_expedition_members_user ON expedition_members(user_id);
-
