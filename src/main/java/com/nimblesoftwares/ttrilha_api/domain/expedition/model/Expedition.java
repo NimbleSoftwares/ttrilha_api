@@ -14,7 +14,7 @@ public class Expedition {
   private LocalDate endDate;
   private ExpeditionStatus status;
   private UUID createdByUserId;
-  private List<UUID> memberIds;
+  private List<ExpeditionMember> members;
   private OffsetDateTime createdAt;
 
   public Expedition() {}
@@ -40,8 +40,8 @@ public class Expedition {
   public UUID getCreatedByUserId() { return createdByUserId; }
   public void setCreatedByUserId(UUID createdByUserId) { this.createdByUserId = createdByUserId; }
 
-  public List<UUID> getMemberIds() { return memberIds; }
-  public void setMemberIds(List<UUID> memberIds) { this.memberIds = memberIds; }
+  public List<ExpeditionMember> getMembers() { return members; }
+  public void setMembers(List<ExpeditionMember> members) { this.members = members; }
 
   public OffsetDateTime getCreatedAt() { return createdAt; }
   public void setCreatedAt(OffsetDateTime createdAt) { this.createdAt = createdAt; }
