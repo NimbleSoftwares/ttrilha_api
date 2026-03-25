@@ -33,7 +33,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\"addresseeId\": \"{{addresseeId}}\"}",
+              "raw": "{\"addresseeId\": \"d2a69f7f-df4b-41f0-ba65-0fab0240856e\"}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -168,8 +168,27 @@
         {
           "name": "sync",
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken2}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "POST",
             "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"displayName\": \"odirlei47777\",\r\n  \"email\": \"KM.PX@example.com\",\r\n  \"firstName\": \"K M P X\",\r\n  \"lastName\": \"X\",\r\n  \"picture\": \"https://lh3.googleusercontent.com/a/ACg8ocIdMrBVlAaK-2TcrrbhuLY1x1Z87r3gOlo6AF3oGY0DhkC1Dok=s96-c\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{baseUrl}}/api/v1/users/sync",
               "host": [
@@ -184,104 +203,375 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "search",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/search?username=ookmpx",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "username",
+                  "value": "ookmpx"
+                }
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
     {
-      "name": "Login PKCE",
-      "request": {
-        "auth": {
-          "type": "oauth2",
-          "oauth2": [
-            {
-              "key": "accessTokenUrl",
-              "value": "{{domain}}/oauth/token",
-              "type": "string"
-            },
-            {
-              "key": "authUrl",
-              "value": "{{domain}}/authorize",
-              "type": "string"
-            },
-            {
-              "key": "authRequestParams",
-              "value": [
+      "name": "Trail",
+      "item": [
+        {
+          "name": "Trail",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
                 {
-                  "key": "audience",
-                  "value": "{{audience}}",
-                  "enabled": true,
-                  "send_as": "request_url"
+                  "key": "token",
+                  "value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImcxR0dWa21Wdk9YSl9tMS1FYm00RSJ9.eyJpc3MiOiJodHRwczovL2Rldi1uaW1ibGVzb2Z0d2FyZXMudXMuYXV0aDAuY29tLyIsInN1YiI6Imdvb2dsZS1vYXV0aDJ8MTA3NzIxODM0MDA2NzAwMzU0MTk2IiwiYXVkIjpbImh0dHBzOi8vYXBpLnR0cmlsaGEvIiwiaHR0cHM6Ly9kZXYtbmltYmxlc29mdHdhcmVzLnVzLmF1dGgwLmNvbS91c2VyaW5mbyJdLCJpYXQiOjE3NzQyODczNjMsImV4cCI6MTc3NDM3Mzc2Mywic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSIsImF6cCI6ImtDNU5xMVM4UGI5TE1JdnYwYno5elN0OFpRTkZ6NTg5In0.BOBYE-oCtRQLGF_H5Bh2ZG0YZUIKid1lebu8y-d86NQgeye4yYghdme7MjiX6CdzXhKfsgdMIjpHnVzOg589Ym7BokSbKW0Iwt3gm0vA1oz4LB0yYfvAhybRboEXy6Dq31ZYHpndZi6GUzu2wyV184L1fxVrGWGE8MAGmnNkQza02dAdPYb6gnLLfcYySkRm5zHTEhcPORN5rcFt2PE1fjY14n6Fw8BeF7Y8oY_udGcv-KAkYSxj9qx4gh8oDUUn2cJFwrW8Tai4WgvnM_aPk8Sq3OYhr4ReDgln3Y2WQOmR9BHlNZa1CAnXmFqVaasBgkACOPCSxjYD18I8mcxidQ",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"lat\": -25.2497,\r\n    \"lon\": -48.8131,\r\n    \"radiusKm\": 30\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/trails/explore",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "trails",
+                "explore"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Expedition",
+      "item": [
+        {
+          "name": "Expedition - Create",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json", "type": "text" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Mystic Mountain Trek\",\n  \"osmId\": 11379327,\n  \"nameTrail\": \"Trilha do Pico Paraná\",\n  \"tags\": {\n    \"name\": \"Trilha do Pico Paraná\",\n    \"route\": \"hiking\",\n    \"sac_scale\": \"demanding_mountain_hiking\",\n    \"type\": \"route\"\n  },\n  \"geometry\": [\n    { \"lat\": -25.2221393, \"lon\": -48.8563662 },\n    { \"lat\": -25.2222818, \"lon\": -48.8562271 }\n  ],\n  \"startDate\": \"2026-03-25\",\n  \"endDate\": \"2026-03-28\",\n  \"crewIds\": []\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/expeditions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "expeditions"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Expedition - List My Expeditions",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/expeditions?sort=ASC",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "expeditions"],
+              "query": [
+                { "key": "status", "value": "", "description": "Optional: PLANNED | ONGOING | COMPLETED | CANCELLED", "disabled": true },
+                { "key": "sort", "value": "ASC", "description": "ASC or DESC" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Expedition - List By Status",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/expeditions?status=COMPLETED&sort=DESC",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "expeditions"],
+              "query": [
+                { "key": "status", "value": "COMPLETED", "description": "PLANNED | ONGOING | COMPLETED | CANCELLED" },
+                { "key": "sort", "value": "DESC", "description": "ASC or DESC" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Expedition - Get Detail",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/expeditions/{{expeditionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "expeditions", "{{expeditionId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Expedition - Update",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+            },
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json", "type": "text" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Trek Title\",\n  \"startDate\": \"2026-04-01\",\n  \"endDate\": \"2026-04-04\",\n  \"osmId\": null,\n  \"nameTrail\": null,\n  \"tags\": null,\n  \"geometry\": null,\n  \"removedMemberIds\": []\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/expeditions/{{expeditionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "expeditions", "{{expeditionId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Expedition - Delete",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/expeditions/{{expeditionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "expeditions", "{{expeditionId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Expedition - Send Invite",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json", "type": "text" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"inviteeId\": \"{{friendUserId}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/expeditions/{{expeditionId}}/invites",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "expeditions", "{{expeditionId}}", "invites"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Expedition - Respond Invite",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+            },
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json", "type": "text" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"ACCEPTED\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/expeditions/invites/{{inviteId}}/respond",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "expeditions", "invites", "{{inviteId}}", "respond"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Expedition - List Pending Invites",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/expeditions/invites/pending",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "expeditions", "invites", "pending"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Login",
+      "item": [
+        {
+          "name": "Login PKCE",
+          "request": {
+            "auth": {
+              "type": "oauth2",
+              "oauth2": [
+                {
+                  "key": "accessTokenUrl",
+                  "value": "{{domain}}/oauth/token",
+                  "type": "string"
+                },
+                {
+                  "key": "authUrl",
+                  "value": "{{domain}}/authorize",
+                  "type": "string"
+                },
+                {
+                  "key": "authRequestParams",
+                  "value": [
+                    {
+                      "key": "audience",
+                      "value": "{{audience}}",
+                      "enabled": true,
+                      "send_as": "request_url"
+                    },
+                    {
+                      "key": "scope",
+                      "value": "openid name profile",
+                      "enabled": true,
+                      "send_as": "request_url"
+                    }
+                  ],
+                  "type": "any"
+                },
+                {
+                  "key": "tokenRequestParams",
+                  "value": [
+                    {
+                      "key": "audience",
+                      "value": "{{audience}}",
+                      "enabled": true,
+                      "send_as": "request_body"
+                    }
+                  ],
+                  "type": "any"
                 },
                 {
                   "key": "scope",
-                  "value": "openid name profile",
-                  "enabled": true,
-                  "send_as": "request_url"
-                }
-              ],
-              "type": "any"
-            },
-            {
-              "key": "tokenRequestParams",
-              "value": [
+                  "value": "openid profile email",
+                  "type": "string"
+                },
                 {
-                  "key": "audience",
-                  "value": "{{audience}}",
-                  "enabled": true,
-                  "send_as": "request_body"
+                  "key": "client_authentication",
+                  "value": "body",
+                  "type": "string"
+                },
+                {
+                  "key": "clientSecret",
+                  "value": "VN8DX17qqWgzqcX7f-d_Id63l3GDaH5R68PsFiUkvnfqTaQUJBn7a-7l-I3ddGbt",
+                  "type": "string"
+                },
+                {
+                  "key": "clientId",
+                  "value": "kC5Nq1S8Pb9LMIvv0bz9zSt8ZQNFz589",
+                  "type": "string"
+                },
+                {
+                  "key": "grant_type",
+                  "value": "authorization_code_with_pkce",
+                  "type": "string"
+                },
+                {
+                  "key": "useBrowser",
+                  "value": true,
+                  "type": "boolean"
+                },
+                {
+                  "key": "tokenName",
+                  "value": "Token TTrilha",
+                  "type": "string"
+                },
+                {
+                  "key": "addTokenTo",
+                  "value": "header",
+                  "type": "string"
                 }
-              ],
-              "type": "any"
+              ]
             },
-            {
-              "key": "scope",
-              "value": "openid profile email",
-              "type": "string"
-            },
-            {
-              "key": "client_authentication",
-              "value": "body",
-              "type": "string"
-            },
-            {
-              "key": "clientSecret",
-              "value": "VN8DX17qqWgzqcX7f-d_Id63l3GDaH5R68PsFiUkvnfqTaQUJBn7a-7l-I3ddGbt",
-              "type": "string"
-            },
-            {
-              "key": "clientId",
-              "value": "kC5Nq1S8Pb9LMIvv0bz9zSt8ZQNFz589",
-              "type": "string"
-            },
-            {
-              "key": "grant_type",
-              "value": "authorization_code_with_pkce",
-              "type": "string"
-            },
-            {
-              "key": "useBrowser",
-              "value": true,
-              "type": "boolean"
-            },
-            {
-              "key": "tokenName",
-              "value": "Token TTrilha",
-              "type": "string"
-            },
-            {
-              "key": "addTokenTo",
-              "value": "header",
-              "type": "string"
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
             }
-          ]
-        },
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": ""
+          },
+          "response": []
         }
-      },
-      "response": []
+      ]
     },
     {
       "name": "test-jwt",

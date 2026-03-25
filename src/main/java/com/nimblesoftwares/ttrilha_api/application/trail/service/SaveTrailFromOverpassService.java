@@ -30,7 +30,8 @@ public class SaveTrailFromOverpassService implements SaveTrailUseCase {
     }
 
     LineString original = lineStringMapper.toLineString(command.geometry());
-    LineString simplified = lineStringMapper.simplify(original, 0.0001);
+    // TODO: review simplification tolerance for navigation accuracy
+    LineString simplified = lineStringMapper.simplify(original, 0.0005);
 
     Trail trail = new Trail();
     trail.setOsmId(command.id());

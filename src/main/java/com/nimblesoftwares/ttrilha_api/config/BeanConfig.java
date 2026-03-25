@@ -9,28 +9,12 @@ import com.nimblesoftwares.ttrilha_api.application.trail.port.out.OverpassPort;
 import com.nimblesoftwares.ttrilha_api.application.trail.port.out.TrailRepositoryPort;
 import com.nimblesoftwares.ttrilha_api.application.trail.service.ExploreTrailsService;
 import com.nimblesoftwares.ttrilha_api.application.trail.service.SaveTrailFromOverpassService;
-import com.nimblesoftwares.ttrilha_api.application.user.port.in.BlockUserUseCase;
-import com.nimblesoftwares.ttrilha_api.application.user.port.in.GetUserByUsernameUseCase;
-import com.nimblesoftwares.ttrilha_api.application.user.port.in.GetUserIdBySubUseCase;
-import com.nimblesoftwares.ttrilha_api.application.user.port.in.ListFriendsUseCase;
-import com.nimblesoftwares.ttrilha_api.application.user.port.in.ListPendingInvitesUseCase;
-import com.nimblesoftwares.ttrilha_api.application.user.port.in.RespondFriendshipInviteUseCase;
-import com.nimblesoftwares.ttrilha_api.application.user.port.in.SendFriendshipInviteUseCase;
-import com.nimblesoftwares.ttrilha_api.application.user.port.in.UnblockUserUseCase;
-import com.nimblesoftwares.ttrilha_api.application.user.port.out.FriendshipRepositoryPort;
-import com.nimblesoftwares.ttrilha_api.application.user.port.out.FriendshipSolicitationRepositoryPort;
-import com.nimblesoftwares.ttrilha_api.application.user.port.out.UserBlockRepositoryPort;
-import com.nimblesoftwares.ttrilha_api.application.user.port.out.UserIdentityRepositoryPort;
-import com.nimblesoftwares.ttrilha_api.application.user.port.out.UserRepositoryPort;
-import com.nimblesoftwares.ttrilha_api.application.user.service.BlockUserService;
-import com.nimblesoftwares.ttrilha_api.application.user.service.GetUserIdBySubService;
-import com.nimblesoftwares.ttrilha_api.application.user.service.GetUserByUsernameService;
-import com.nimblesoftwares.ttrilha_api.application.user.service.ListFriendsService;
-import com.nimblesoftwares.ttrilha_api.application.user.service.ListPendingInvitesService;
-import com.nimblesoftwares.ttrilha_api.application.user.service.RespondFriendshipInviteService;
-import com.nimblesoftwares.ttrilha_api.application.user.service.SaveUserService;
-import com.nimblesoftwares.ttrilha_api.application.user.service.SendFriendshipInviteService;
-import com.nimblesoftwares.ttrilha_api.application.user.service.UnblockUserService;
+import com.nimblesoftwares.ttrilha_api.application.user.port.in.*;
+import com.nimblesoftwares.ttrilha_api.application.user.port.out.*;
+import com.nimblesoftwares.ttrilha_api.application.user.service.*;
+import com.nimblesoftwares.ttrilha_api.application.expedition.port.in.*;
+import com.nimblesoftwares.ttrilha_api.application.expedition.port.out.ExpeditionRepositoryPort;
+import com.nimblesoftwares.ttrilha_api.application.expedition.service.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -124,5 +108,60 @@ public class BeanConfig {
   @Bean
   public UnblockUserUseCase unblockUserUseCase(UserBlockRepositoryPort userBlockRepository) {
     return new UnblockUserService(userBlockRepository);
+  }
+
+  @Bean
+  public CreateExpeditionUseCase createExpeditionUseCase(
+      SaveTrailUseCase saveTrailUseCase,
+      ExpeditionRepositoryPort expeditionRepository) {
+    return new CreateExpeditionService(saveTrailUseCase, expeditionRepository);
+  }
+
+  @Bean
+  public GetExpeditionUseCase getExpeditionUseCase(
+      ExpeditionRepositoryPort expeditionRepository,
+      TrailRepositoryPort trailRepository,
+      UserRepositoryPort userRepositoryPort,
+      LineStringMapper lineStringMapper) {
+    return new GetExpeditionService(expeditionRepository, trailRepository, userRepositoryPort, lineStringMapper);
+  }
+
+  @Bean
+  public ListUserExpeditionsUseCase listUserExpeditionsUseCase(
+      ExpeditionRepositoryPort expeditionRepository,
+      TrailRepositoryPort trailRepository,
+      UserRepositoryPort userRepositoryPort) {
+    return new ListUserExpeditionsService(expeditionRepository, trailRepository, userRepositoryPort);
+  }
+
+  @Bean
+  public InviteToExpeditionUseCase inviteToExpeditionUseCase(
+      ExpeditionRepositoryPort expeditionRepository,
+      FriendshipRepositoryPort friendshipRepository) {
+    return new InviteToExpeditionService(expeditionRepository, friendshipRepository);
+  }
+
+  @Bean
+  public RespondExpeditionInviteUseCase respondExpeditionInviteUseCase(ExpeditionRepositoryPort expeditionRepository) {
+    return new RespondExpeditionInviteService(expeditionRepository);
+  }
+
+  @Bean
+  public ListPendingExpeditionInvitesUseCase listPendingExpeditionInvitesUseCase(
+      ExpeditionRepositoryPort expeditionRepository,
+      UserRepositoryPort userRepositoryPort) {
+    return new ListPendingExpeditionInvitesService(expeditionRepository, userRepositoryPort);
+  }
+
+  @Bean
+  public UpdateExpeditionUseCase updateExpeditionUseCase(
+      ExpeditionRepositoryPort expeditionRepository,
+      SaveTrailUseCase saveTrailUseCase) {
+    return new UpdateExpeditionService(expeditionRepository, saveTrailUseCase);
+  }
+
+  @Bean
+  public DeleteExpeditionUseCase deleteExpeditionUseCase(ExpeditionRepositoryPort expeditionRepository) {
+    return new DeleteExpeditionService(expeditionRepository);
   }
 }
