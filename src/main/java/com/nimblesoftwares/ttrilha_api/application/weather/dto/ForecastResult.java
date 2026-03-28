@@ -13,7 +13,8 @@ public record ForecastResult(
       double feelsLike,
       int humidity,
       String description,
+      int conditionId,
+      WeatherCondition condition,
       double windSpeed
   ) {}
 }
-

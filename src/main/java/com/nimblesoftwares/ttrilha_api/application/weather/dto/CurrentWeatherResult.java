@@ -6,6 +6,7 @@ public record CurrentWeatherResult(
     double feelsLike,
     int humidity,
     String description,
+    int conditionId,
+    WeatherCondition condition,
     double windSpeed
 ) {}
-
