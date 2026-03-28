@@ -473,6 +473,81 @@
       ]
     },
     {
+      "name": "Weather",
+      "item": [
+        {
+          "name": "Weather - Current by City",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/weather/current",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "weather", "current"],
+              "query": [
+                {
+                  "key": "city",
+                  "value": "Curitiba",
+                  "description": "City name to get current weather"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Weather - Forecast by Coordinates",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/weather/forecast?lat=-25.2497&lon=-48.8131&date=2026-03-28",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "weather", "forecast"],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "-25.2497",
+                  "description": "Latitude"
+                },
+                {
+                  "key": "lon",
+                  "value": "-48.8131",
+                  "description": "Longitude"
+                },
+                {
+                  "key": "date",
+                  "value": "2026-03-28",
+                  "description": "Date in YYYY-MM-DD format (up to 5 days ahead)"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "Login",
       "item": [
         {

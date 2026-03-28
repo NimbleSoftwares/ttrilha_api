@@ -3,6 +3,12 @@ package com.nimblesoftwares.ttrilha_api.config;
 import com.nimblesoftwares.ttrilha_api.adapter.out.persistence.trail.mapper.LineStringMapper;
 import com.nimblesoftwares.ttrilha_api.adapter.out.trail.GeocodingClient;
 import com.nimblesoftwares.ttrilha_api.adapter.out.trail.OverpassClient;
+import com.nimblesoftwares.ttrilha_api.adapter.out.weather.WeatherClient;
+import com.nimblesoftwares.ttrilha_api.application.weather.port.in.GetCurrentWeatherUseCase;
+import com.nimblesoftwares.ttrilha_api.application.weather.port.in.GetForecastUseCase;
+import com.nimblesoftwares.ttrilha_api.application.weather.port.out.WeatherPort;
+import com.nimblesoftwares.ttrilha_api.application.weather.service.GetCurrentWeatherService;
+import com.nimblesoftwares.ttrilha_api.application.weather.service.GetForecastService;
 import com.nimblesoftwares.ttrilha_api.application.trail.port.in.SaveTrailUseCase;
 import com.nimblesoftwares.ttrilha_api.application.trail.port.out.GeocodingPort;
 import com.nimblesoftwares.ttrilha_api.application.trail.port.out.OverpassPort;
@@ -163,5 +169,21 @@ public class BeanConfig {
   @Bean
   public DeleteExpeditionUseCase deleteExpeditionUseCase(ExpeditionRepositoryPort expeditionRepository) {
     return new DeleteExpeditionService(expeditionRepository);
+  }
+
+  @Bean
+  public WeatherPort weatherPort(@Value("${openweathermap.apiKey}") String apiKey) {
+    return new WeatherClient(apiKey);
+  }
+
+  @Bean
+  public GetCurrentWeatherUseCase getCurrentWeatherUseCase(WeatherPort weatherPort,
+                                                            UserRepositoryPort userRepositoryPort) {
+    return new GetCurrentWeatherService(weatherPort, userRepositoryPort);
+  }
+
+  @Bean
+  public GetForecastUseCase getForecastUseCase(WeatherPort weatherPort) {
+    return new GetForecastService(weatherPort);
   }
 }

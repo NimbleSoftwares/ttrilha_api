@@ -51,3 +51,6 @@ auth0:
 overpass:
   baseUrl: https://overpass-api.de/api
 
+openweathermap:
+  apiKey: ${OPEN_WEATHER_MAP_KEY:}
+
