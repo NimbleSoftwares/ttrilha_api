@@ -2,9 +2,13 @@ package com.nimblesoftwares.ttrilha_api.adapter.out.persistence.trail.mapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimblesoftwares.ttrilha_api.adapter.out.persistence.trail.entities.TrailEntity;
+import com.nimblesoftwares.ttrilha_api.application.trail.dto.TrailData;
+import com.nimblesoftwares.ttrilha_api.domain.trail.model.GeoPoint;
 import com.nimblesoftwares.ttrilha_api.domain.trail.model.Trail;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -43,5 +47,21 @@ public class TrailMapper {
     } catch (Exception e) {
       throw new RuntimeException("Error converting to JSON", e);
     }
+  }
+
+  public TrailData entityToTrailData(TrailEntity entity) {
+      List<GeoPoint> points =
+          Arrays.stream(
+              entity.getGeometry()
+                  .getCoordinates()).map(
+                      coord -> new GeoPoint(coord.y, coord.x)
+          ).toList();
+
+      return new TrailData(
+          entity.getOsmId(),
+          entity.getName(),
+          entity.getTags(),
+          entity.getDifficulty(),
+          points);
   }
 }

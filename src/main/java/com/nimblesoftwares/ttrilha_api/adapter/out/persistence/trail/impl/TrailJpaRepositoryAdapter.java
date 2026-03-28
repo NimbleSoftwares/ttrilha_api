@@ -4,6 +4,7 @@ import com.nimblesoftwares.ttrilha_api.adapter.out.persistence.trail.entities.Tr
 import com.nimblesoftwares.ttrilha_api.adapter.out.persistence.trail.interfaces.TrailJpaCustomRepository;
 import com.nimblesoftwares.ttrilha_api.adapter.out.persistence.trail.interfaces.TrailJpaRepository;
 import com.nimblesoftwares.ttrilha_api.adapter.out.persistence.trail.mapper.TrailMapper;
+import com.nimblesoftwares.ttrilha_api.application.trail.dto.TrailData;
 import com.nimblesoftwares.ttrilha_api.application.trail.port.out.TrailRepositoryPort;
 import com.nimblesoftwares.ttrilha_api.domain.trail.exception.TrailAlreadyExistsException;
 import com.nimblesoftwares.ttrilha_api.domain.trail.model.Trail;
@@ -49,8 +50,8 @@ public class TrailJpaRepositoryAdapter implements TrailRepositoryPort {
   }
 
   @Override
-  public List<Trail> findByNameFuzzy(String name) {
+  public List<TrailData> findByNameFuzzy(String name) {
     List<TrailEntity> trailEntityList = customRepository.findByNameFuzzy(name);
-    return trailEntityList.stream().map(mapper::toDomain).toList();
+    return trailEntityList.stream().map(mapper::entityToTrailData).toList();
   }
 }

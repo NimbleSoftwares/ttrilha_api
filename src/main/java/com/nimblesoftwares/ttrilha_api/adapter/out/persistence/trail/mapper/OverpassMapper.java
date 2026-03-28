@@ -1,7 +1,11 @@
 package com.nimblesoftwares.ttrilha_api.adapter.out.persistence.trail.mapper;
 
 import com.nimblesoftwares.ttrilha_api.adapter.out.trail.dto.OverpassElement;
-import com.nimblesoftwares.ttrilha_api.domain.trail.model.*;
+import com.nimblesoftwares.ttrilha_api.application.trail.dto.TrailData;
+import com.nimblesoftwares.ttrilha_api.domain.trail.model.GeoPoint;
+import com.nimblesoftwares.ttrilha_api.domain.trail.model.SacScale;
+import com.nimblesoftwares.ttrilha_api.domain.trail.model.TrailDifficulty;
+import com.nimblesoftwares.ttrilha_api.domain.trail.model.TrailVisibility;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -10,13 +14,7 @@ import java.util.Objects;
 @Component
 public class OverpassMapper {
 
-  private final LineStringMapper lineStringMapper;
-
-  public OverpassMapper(LineStringMapper lineStringMapper) {
-    this.lineStringMapper = lineStringMapper;
-  }
-
-  public Trail toDomain(OverpassElement element) {
+  public TrailData toTrailData(OverpassElement element) {
     String name = element.tags() != null ? element.tags().getOrDefault("name", "Unnamed") : "Unnamed";
 
     SacScale sacScale = element.tags() != null ? SacScale.fromTag(element.tags().getOrDefault("sac_scale", "Unknown")) : SacScale.UNKNOWN;
@@ -41,13 +39,6 @@ public class OverpassMapper {
       return null;
     }
 
-    Trail trail = new Trail();
-    trail.setOsmId(element.id());
-    trail.setName(name);
-    trail.setTags(element.tags());
-    trail.setGeometry(lineStringMapper.toLineString(points));
-    trail.setDifficulty(difficulty);
-
-    return trail;
+    return new TrailData(element.id(), name, element.tags(), difficulty, points);
   }
 }

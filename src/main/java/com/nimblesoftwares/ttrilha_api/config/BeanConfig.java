@@ -29,7 +29,9 @@ public class BeanConfig {
   }
 
   @Bean
-  public OverpassPort overpassPort(@Value("${overpass.baseUrl}") String baseUrl, OverpassMapper overpassMapper) {
+  public OverpassPort overpassPort(
+      @Value("${overpass.baseUrl}") String baseUrl,
+      OverpassMapper overpassMapper) {
     return new OverpassClient(baseUrl, overpassMapper);
   }
 

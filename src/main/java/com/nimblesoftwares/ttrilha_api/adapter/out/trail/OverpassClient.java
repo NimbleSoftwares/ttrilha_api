@@ -1,11 +1,10 @@
 package com.nimblesoftwares.ttrilha_api.adapter.out.trail;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimblesoftwares.ttrilha_api.adapter.out.persistence.trail.mapper.OverpassMapper;
 import com.nimblesoftwares.ttrilha_api.adapter.out.trail.dto.OverpassResponse;
+import com.nimblesoftwares.ttrilha_api.application.trail.dto.TrailData;
 import com.nimblesoftwares.ttrilha_api.application.trail.port.out.OverpassPort;
 import com.nimblesoftwares.ttrilha_api.domain.trail.model.BoundingBox;
-import com.nimblesoftwares.ttrilha_api.domain.trail.model.Trail;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,8 +28,8 @@ public class OverpassClient implements OverpassPort {
   private static final Logger log = LoggerFactory.getLogger(OverpassClient.class);
 
   private final String overpassBaseUrl;
-  private final ObjectMapper objectMapper = new ObjectMapper();
   private final OverpassMapper overpassMapper;
+
   private WebClient webClient;
 
   public OverpassClient(String overpassBaseUrl, OverpassMapper overpassMapper) {
@@ -49,8 +48,7 @@ public class OverpassClient implements OverpassPort {
 
   @Override
   @Cacheable(value = "overpass-trails", key = "#bbox.toTileKey()")
-  public List<Trail> searchTrails(BoundingBox bbox) {
-
+  public List<TrailData> searchTrails(BoundingBox bbox) {
     String query = buildOverpassQuery(bbox);
 
     MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
@@ -68,14 +66,14 @@ public class OverpassClient implements OverpassPort {
       return List.of();
     }
 
-    Map<Long, Trail> map = response.elements().stream()
-        .map(overpassMapper::toDomain)
+    Map<Long, TrailData> map = response.elements().stream()
+        .map(overpassMapper::toTrailData)
         .filter(Objects::nonNull)
         .collect(Collectors.toMap(
-            Trail::getOsmId,
+            TrailData::osmId,
             t -> t,
             (t1, t2) ->
-                t1.getGeometry().getNumPoints() > t2.getGeometry().getNumPoints()
+                t1.geometry().size() > t2.geometry().size()
                     ? t1 : t2
         ));
 

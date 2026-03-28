@@ -42,7 +42,7 @@ public class TrailJpaCustomRepositoryAdapter implements TrailJpaCustomRepository
             :osmId,
             :name,
             CAST(:tags AS jsonb),
-            :difficulty,
+            CAST(:difficulty AS varchar),
             :geometry,
             ST_Transform(
                 ST_SimplifyPreserveTopology(
@@ -59,7 +59,7 @@ public class TrailJpaCustomRepositoryAdapter implements TrailJpaCustomRepository
         .setParameter("osmId", osmId)
         .setParameter("name", name)
         .setParameter("tags", tags)
-        .setParameter("difficulty", difficulty)
+        .setParameter("difficulty", difficulty.name())
         .setParameter("geometry", geometry)
         .getSingleResult();
 

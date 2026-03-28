@@ -8,7 +8,7 @@ import com.nimblesoftwares.ttrilha_api.domain.trail.model.TrailVisibility;
 import java.util.List;
 import java.util.Map;
 
-public record OverpassTrailData(
+public record TrailData(
     Long osmId,
     String name,
     Map<String, String> tags,
