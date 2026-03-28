@@ -3,6 +3,8 @@ package com.nimblesoftwares.ttrilha_api.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimblesoftwares.ttrilha_api.application.trail.dto.ExploreTrailResult;
 import com.nimblesoftwares.ttrilha_api.application.trail.port.out.GeocodingPort;
+import com.nimblesoftwares.ttrilha_api.application.weather.dto.CurrentWeatherResult;
+import com.nimblesoftwares.ttrilha_api.application.weather.dto.ForecastResult;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -50,6 +52,24 @@ public class RedisConfig {
                 RedisSerializationContext.SerializationPair.fromSerializer(
                     new Jackson2JsonRedisSerializer<>(GeocodingPort.LatLon.class)));
 
+    RedisCacheConfiguration weatherCurrentConfig =
+        RedisCacheConfiguration.defaultCacheConfig()
+            .serializeKeysWith(
+                RedisSerializationContext.SerializationPair.fromSerializer(
+                    new StringRedisSerializer()))
+            .serializeValuesWith(
+                RedisSerializationContext.SerializationPair.fromSerializer(
+                    new Jackson2JsonRedisSerializer<>(CurrentWeatherResult.class)));
+
+    RedisCacheConfiguration weatherForecastConfig =
+        RedisCacheConfiguration.defaultCacheConfig()
+            .serializeKeysWith(
+                RedisSerializationContext.SerializationPair.fromSerializer(
+                    new StringRedisSerializer()))
+            .serializeValuesWith(
+                RedisSerializationContext.SerializationPair.fromSerializer(
+                    new Jackson2JsonRedisSerializer<>(ForecastResult.class)));
+
     return RedisCacheManager.builder(connectionFactory)
         .cacheDefaults(defaultConfig.entryTtl(Duration.ofMinutes(5)))
         .withCacheConfiguration(
@@ -58,6 +78,12 @@ public class RedisConfig {
         .withCacheConfiguration(
             "overpass-trails",
             overpassConfig.entryTtl(Duration.ofHours(4)))
+        .withCacheConfiguration(
+            "weather-current",
+            weatherCurrentConfig.entryTtl(Duration.ofMinutes(10)))
+        .withCacheConfiguration(
+            "weather-forecast",
+            weatherForecastConfig.entryTtl(Duration.ofMinutes(10)))
         .build();
   }
 }
