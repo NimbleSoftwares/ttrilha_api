@@ -41,6 +41,7 @@ public class UpdateExpeditionService implements UpdateExpeditionUseCase {
           command.nameTrail(),
           command.osmId(),
           command.tags(),
+          command.difficulty(),
           command.geometry()
       ));
       expedition.setOsmId(command.osmId());

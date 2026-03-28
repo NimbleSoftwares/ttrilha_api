@@ -32,6 +32,7 @@ public class CreateExpeditionService implements CreateExpeditionUseCase {
         command.nameTrail(),
         command.osmId(),
         command.tags(),
+        command.difficulty(),
         command.geometry()
     ));
 

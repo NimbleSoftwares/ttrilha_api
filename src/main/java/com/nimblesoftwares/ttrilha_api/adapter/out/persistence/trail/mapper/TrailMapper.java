@@ -1,11 +1,16 @@
 package com.nimblesoftwares.ttrilha_api.adapter.out.persistence.trail.mapper;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimblesoftwares.ttrilha_api.adapter.out.persistence.trail.entities.TrailEntity;
 import com.nimblesoftwares.ttrilha_api.domain.trail.model.Trail;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+
 @Component
 public class TrailMapper {
+
+  private static final ObjectMapper objectMapper = new ObjectMapper();
 
   public TrailEntity toPersistence(Trail trail) {
     return TrailEntity.builder()
@@ -30,5 +35,13 @@ public class TrailMapper {
     trail.setDistanceMeters(trailEntity.getDistanceMeters());
     trail.setGeometry(trailEntity.getGeometry());
     return trail;
+  }
+
+  public String mapTagsToJson(Map<String, String> tags) {
+    try {
+      return objectMapper.writeValueAsString(tags);
+    } catch (Exception e) {
+      throw new RuntimeException("Error converting to JSON", e);
+    }
   }
 }

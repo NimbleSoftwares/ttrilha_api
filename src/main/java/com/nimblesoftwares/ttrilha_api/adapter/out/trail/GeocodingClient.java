@@ -39,10 +39,16 @@ public class GeocodingClient implements GeocodingPort {
       String encoded = URLEncoder.encode(locationName, StandardCharsets.UTF_8);
 
       JsonNode response = webClient.get()
-          .uri("/search?q={name}&polygon_geojson=1&format=jsonv2&limit=1", encoded)
+          .uri(uriBuilder -> uriBuilder
+              .path("/search")
+              .queryParam("q", locationName)
+              .queryParam("polygon_geojson", "1")
+              .queryParam("format", "jsonv2")
+              .queryParam("limit", 1)
+              .build()
+          )
           .retrieve()
           .bodyToMono(JsonNode.class)
-          .onErrorMap(ex -> new RuntimeException("Failed to geocode location: " + locationName, ex))
           .block();
 
       if (response == null || !response.isArray() || response.isEmpty()) {

@@ -7,8 +7,9 @@ import java.util.Map;
 
 public record SaveTrailCommand(
     String name,
-    Long id,
+    Long osmId,
     Map<String, String> tags,
+    String difficulty,
     List<GeoPoint> geometry
 ) {
 }

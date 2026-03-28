@@ -4,7 +4,6 @@ CREATE TABLE IF NOT EXISTS trails (
     created_by_user_id UUID,
     name VARCHAR(255),
     difficulty VARCHAR(50),
-
     tags JSONB,
     geometry GEOGRAPHY(LineString, 4326),
     distance_meters DOUBLE PRECISION GENERATED ALWAYS AS (ST_Length(geometry)) STORED,
@@ -24,4 +23,3 @@ ALTER TABLE trails
 CREATE INDEX trails_geometry_idx
     ON trails
         USING GIST (geometry);
-

@@ -12,6 +12,7 @@ public record CreateExpeditionCommand(
     Long osmId,
     String nameTrail,
     Map<String, String> tags,
+    String difficulty,
     List<GeoPoint> geometry,
     LocalDate startDate,
     LocalDate endDate,

@@ -16,6 +16,7 @@ public record UpdateExpeditionRequest(
     Long osmId,
     String nameTrail,
     Map<String, String> tags,
+    String difficulty,
     List<GeoPoint> geometry,
     // Optional list of member userIds to remove
     List<UUID> removedMemberIds
@@ -30,6 +31,7 @@ public record UpdateExpeditionRequest(
         osmId,
         nameTrail,
         tags,
+        difficulty,
         geometry,
         removedMemberIds
     );

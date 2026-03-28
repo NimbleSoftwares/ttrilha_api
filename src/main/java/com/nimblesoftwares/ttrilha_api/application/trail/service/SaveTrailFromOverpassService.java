@@ -5,6 +5,7 @@ import com.nimblesoftwares.ttrilha_api.application.trail.command.SaveTrailComman
 import com.nimblesoftwares.ttrilha_api.application.trail.port.in.SaveTrailUseCase;
 import com.nimblesoftwares.ttrilha_api.application.trail.port.out.TrailRepositoryPort;
 import com.nimblesoftwares.ttrilha_api.domain.trail.model.Trail;
+import com.nimblesoftwares.ttrilha_api.domain.trail.model.TrailDifficulty;
 import org.locationtech.jts.geom.LineString;
 
 import java.util.Optional;
@@ -23,21 +24,20 @@ public class SaveTrailFromOverpassService implements SaveTrailUseCase {
   @Override
   public UUID execute(SaveTrailCommand command) {
 
-    Optional<Trail> existingTrail = trailRepositoryPort.findByOsmId(command.id());
+    Optional<Trail> existingTrail = trailRepositoryPort.findByOsmId(command.osmId());
 
     if(existingTrail.isPresent()) {
       return existingTrail.get().getId();
     }
 
     LineString original = lineStringMapper.toLineString(command.geometry());
-    // TODO: review simplification tolerance for navigation accuracy
-    LineString simplified = lineStringMapper.simplify(original, 0.0005);
 
     Trail trail = new Trail();
-    trail.setOsmId(command.id());
+    trail.setOsmId(command.osmId());
     trail.setName(command.name());
     trail.setTags(command.tags());
-    trail.setGeometry(simplified);
+    trail.setDifficulty(TrailDifficulty.valueOf(command.difficulty()));
+    trail.setGeometry(original);
 
     return trailRepositoryPort.save(trail);
   }

@@ -5,7 +5,6 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.PrecisionModel;
-import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,11 +23,6 @@ public class LineStringMapper {
         .toArray(Coordinate[]::new);
 
     return geometryFactory.createLineString(coords);
-  }
-
-  public LineString simplify(LineString lineString, double tolerance) {
-    return (LineString) DouglasPeuckerSimplifier
-        .simplify(lineString, tolerance);
   }
 
   public List<GeoPoint> toGeoPoints(LineString lineString) {

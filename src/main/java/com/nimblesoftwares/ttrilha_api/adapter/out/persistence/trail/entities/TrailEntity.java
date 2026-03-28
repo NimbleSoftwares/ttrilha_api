@@ -1,5 +1,6 @@
 package com.nimblesoftwares.ttrilha_api.adapter.out.persistence.trail.entities;
 
+import com.nimblesoftwares.ttrilha_api.domain.trail.model.TrailDifficulty;
 import com.vladmihalcea.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
@@ -38,9 +39,9 @@ public class TrailEntity {
   @Column(name = "distance_meters", insertable = false, updatable = false)
   private Double distanceMeters;
 
-  @Size(max = 50)
-  @Column(name = "difficulty", length = 50)
-  private String difficulty;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "difficulty")
+  private TrailDifficulty difficulty;
 
   @Type(JsonType.class)
   @Column(name = "tags", columnDefinition = "jsonb")

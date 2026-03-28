@@ -12,7 +12,7 @@ public class Trail {
   private Long osmId;
   private String name;
   private Map<String, String> tags;
-  private String difficulty;
+  private TrailDifficulty difficulty;
   private UUID createdByUserId;
   private Double distanceMeters;
   private Double elevationGain;
@@ -46,11 +46,11 @@ public class Trail {
     this.name = name;
   }
 
-  public String getDifficulty() {
+  public TrailDifficulty getDifficulty() {
     return difficulty;
   }
 
-  public void setDifficulty(String difficulty) {
+  public void setDifficulty(TrailDifficulty difficulty) {
     this.difficulty = difficulty;
   }
 

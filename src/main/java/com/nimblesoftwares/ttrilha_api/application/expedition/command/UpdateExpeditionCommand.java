@@ -17,6 +17,7 @@ public record UpdateExpeditionCommand(
     Long osmId,
     String nameTrail,
     Map<String, String> tags,
+    String difficulty,
     List<GeoPoint> geometry,
     // Members to mark as REMOVED
     List<UUID> removedMemberIds

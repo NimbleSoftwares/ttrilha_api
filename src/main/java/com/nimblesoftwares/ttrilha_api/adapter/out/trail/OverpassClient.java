@@ -1,11 +1,11 @@
 package com.nimblesoftwares.ttrilha_api.adapter.out.trail;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimblesoftwares.ttrilha_api.adapter.out.persistence.trail.mapper.OverpassMapper;
 import com.nimblesoftwares.ttrilha_api.adapter.out.trail.dto.OverpassResponse;
-import com.nimblesoftwares.ttrilha_api.application.trail.dto.ExploreTrailResult;
-import com.nimblesoftwares.ttrilha_api.application.trail.dto.OverpassTrailData;
 import com.nimblesoftwares.ttrilha_api.application.trail.port.out.OverpassPort;
-import com.nimblesoftwares.ttrilha_api.domain.trail.model.GeoPoint;
+import com.nimblesoftwares.ttrilha_api.domain.trail.model.BoundingBox;
+import com.nimblesoftwares.ttrilha_api.domain.trail.model.Trail;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +15,11 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Client to search trails on Overpass API.
@@ -26,9 +30,11 @@ public class OverpassClient implements OverpassPort {
 
   private final String overpassBaseUrl;
   private final ObjectMapper objectMapper = new ObjectMapper();
+  private final OverpassMapper overpassMapper;
   private WebClient webClient;
 
-  public OverpassClient(String overpassBaseUrl) {
+  public OverpassClient(String overpassBaseUrl, OverpassMapper overpassMapper) {
+    this.overpassMapper = overpassMapper;
     this.overpassBaseUrl = overpassBaseUrl;
     init();
   }
@@ -42,15 +48,10 @@ public class OverpassClient implements OverpassPort {
   }
 
   @Override
-  @Cacheable(value = "overpass-trails", key = "T(java.lang.String).format('%.5f_%.5f_%d', #lat, #lon, #radiusKm)")
-  public ExploreTrailResult searchTrails(double lat, double lon, int radiusKm) {
+  @Cacheable(value = "overpass-trails", key = "#bbox.toTileKey()")
+  public List<Trail> searchTrails(BoundingBox bbox) {
 
-    String query = "[out:json][timeout:25];" +
-        "(" +
-        "relation[\"type\"=\"route\"][\"route\"=\"hiking\"](around:" + (radiusKm * 1000) + "," + lat + "," + lon + ");" +
-        "relation[\"type\"=\"route\"][\"route\"=\"walking\"](around:" + (radiusKm * 1000) + "," + lat + "," + lon + ");" +
-        ");" +
-        "out geom;";
+    String query = buildOverpassQuery(bbox);
 
     MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
     body.add("data", query);
@@ -64,25 +65,32 @@ public class OverpassClient implements OverpassPort {
         .block();
 
     if (response == null || response.elements() == null) {
-      return new ExploreTrailResult(List.of());
+      return List.of();
     }
 
-    List<OverpassTrailData> trailsData = response.elements().stream()
-       .map(element -> {
-         String name = element.tags() != null ? element.tags().getOrDefault("name", "Unnamed") : "Unnamed";
-         List<GeoPoint> points = (
-             element.geometry() != null && !element.geometry().isEmpty())
-             ? element.geometry()
-             : (element.members() != null)
-                 ? element.members().stream()
-                     .filter(m -> m.geometry() != null)
-                     .flatMap(m -> m.geometry().stream())
-                      .toList()
-                 : List.of();
+    Map<Long, Trail> map = response.elements().stream()
+        .map(overpassMapper::toDomain)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toMap(
+            Trail::getOsmId,
+            t -> t,
+            (t1, t2) ->
+                t1.getGeometry().getNumPoints() > t2.getGeometry().getNumPoints()
+                    ? t1 : t2
+        ));
 
-          return new OverpassTrailData(element.id(), name, element.tags(), points);
-       }).toList();
+    return new ArrayList<>(map.values());
+  }
 
-    return new ExploreTrailResult(trailsData);
+  private String buildOverpassQuery(BoundingBox bbox) {
+
+    String query = "[out:json][timeout:15];" +
+        "(" +
+        "relation[\"type\"=\"route\"][\"route\"=\"hiking\"]("+ bbox.getSouth() + "," + bbox.getWest() + "," + bbox.getNorth() + "," + bbox.getEast() +");" +
+        "relation[\"type\"=\"route\"][\"route\"=\"walking\"]("+ bbox.getSouth() + "," + bbox.getWest() + "," + bbox.getNorth() + "," + bbox.getEast() +");" +
+        ");" +
+        "out geom;";
+
+    return query;
   }
 }

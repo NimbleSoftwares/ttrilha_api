@@ -1,8 +1,12 @@
 package com.nimblesoftwares.ttrilha_api.config;
 
 import com.nimblesoftwares.ttrilha_api.adapter.out.persistence.trail.mapper.LineStringMapper;
+import com.nimblesoftwares.ttrilha_api.adapter.out.persistence.trail.mapper.OverpassMapper;
 import com.nimblesoftwares.ttrilha_api.adapter.out.trail.GeocodingClient;
 import com.nimblesoftwares.ttrilha_api.adapter.out.trail.OverpassClient;
+import com.nimblesoftwares.ttrilha_api.application.expedition.port.in.*;
+import com.nimblesoftwares.ttrilha_api.application.expedition.port.out.ExpeditionRepositoryPort;
+import com.nimblesoftwares.ttrilha_api.application.expedition.service.*;
 import com.nimblesoftwares.ttrilha_api.application.trail.port.in.SaveTrailUseCase;
 import com.nimblesoftwares.ttrilha_api.application.trail.port.out.GeocodingPort;
 import com.nimblesoftwares.ttrilha_api.application.trail.port.out.OverpassPort;
@@ -12,9 +16,6 @@ import com.nimblesoftwares.ttrilha_api.application.trail.service.SaveTrailFromOv
 import com.nimblesoftwares.ttrilha_api.application.user.port.in.*;
 import com.nimblesoftwares.ttrilha_api.application.user.port.out.*;
 import com.nimblesoftwares.ttrilha_api.application.user.service.*;
-import com.nimblesoftwares.ttrilha_api.application.expedition.port.in.*;
-import com.nimblesoftwares.ttrilha_api.application.expedition.port.out.ExpeditionRepositoryPort;
-import com.nimblesoftwares.ttrilha_api.application.expedition.service.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,8 +29,8 @@ public class BeanConfig {
   }
 
   @Bean
-  public OverpassPort overpassPort(@Value("${overpass.baseUrl}") String baseUrl) {
-    return new OverpassClient(baseUrl);
+  public OverpassPort overpassPort(@Value("${overpass.baseUrl}") String baseUrl, OverpassMapper overpassMapper) {
+    return new OverpassClient(baseUrl, overpassMapper);
   }
 
   @Bean
@@ -40,8 +41,9 @@ public class BeanConfig {
   @Bean
   public ExploreTrailsService exploreTrailsService(
       GeocodingPort geocodingPort,
-      OverpassPort overpassPort) {
-    return new ExploreTrailsService(overpassPort, geocodingPort);
+      OverpassPort overpassPort,
+      TrailRepositoryPort trailRepositoryPort) {
+    return new ExploreTrailsService(overpassPort, geocodingPort, trailRepositoryPort);
   }
 
   @Bean
