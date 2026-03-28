@@ -4,6 +4,7 @@ import com.nimblesoftwares.ttrilha_api.adapter.out.weather.dto.OpenWeatherCurren
 import com.nimblesoftwares.ttrilha_api.adapter.out.weather.dto.OpenWeatherForecastResponse;
 import com.nimblesoftwares.ttrilha_api.application.weather.dto.CurrentWeatherResult;
 import com.nimblesoftwares.ttrilha_api.application.weather.dto.ForecastResult;
+import com.nimblesoftwares.ttrilha_api.application.weather.dto.WeatherCondition;
 import com.nimblesoftwares.ttrilha_api.application.weather.exception.WeatherCityNotFoundException;
 import com.nimblesoftwares.ttrilha_api.application.weather.exception.WeatherServiceException;
 import com.nimblesoftwares.ttrilha_api.application.weather.port.out.WeatherPort;
@@ -63,9 +64,12 @@ public class WeatherClient implements WeatherPort {
       }
 
       String description = (response.weather() != null && !response.weather().isEmpty())
-          ? response.weather().get(0).description()
+          ? response.weather().getFirst().description()
           : "";
-
+      int conditionId = (response.weather() != null && !response.weather().isEmpty())
+          ? response.weather().getFirst().id()
+          : 0;
+      WeatherCondition condition = WeatherCondition.fromConditionId(conditionId);
       double windSpeed = response.wind() != null ? response.wind().speed() : 0.0;
 
       return new CurrentWeatherResult(
@@ -74,6 +78,8 @@ public class WeatherClient implements WeatherPort {
           response.main().feelsLike(),
           response.main().humidity(),
           description,
+          conditionId,
+          condition,
           windSpeed
       );
     } catch (WebClientResponseException e) {
@@ -117,8 +123,12 @@ public class WeatherClient implements WeatherPort {
           .map(item -> {
             String time = item.dtTxt().length() >= 16 ? item.dtTxt().substring(11, 16) : item.dtTxt();
             String description = (item.weather() != null && !item.weather().isEmpty())
-                ? item.weather().get(0).description()
+                ? item.weather().getFirst().description()
                 : "";
+            int conditionId = (item.weather() != null && !item.weather().isEmpty())
+                ? item.weather().getFirst().id()
+                : 0;
+            WeatherCondition condition = WeatherCondition.fromConditionId(conditionId);
             double windSpeed = item.wind() != null ? item.wind().speed() : 0.0;
             return new ForecastResult.ForecastEntry(
                 time,
@@ -126,6 +136,8 @@ public class WeatherClient implements WeatherPort {
                 item.main().feelsLike(),
                 item.main().humidity(),
                 description,
+                conditionId,
+                condition,
                 windSpeed
             );
           })

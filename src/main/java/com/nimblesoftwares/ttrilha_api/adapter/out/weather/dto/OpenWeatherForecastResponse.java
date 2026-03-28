@@ -30,6 +30,7 @@ public record OpenWeatherForecastResponse(
   ) {}
 
   public record Weather(
+      int id,
       String description
   ) {}
 
@@ -37,4 +38,3 @@ public record OpenWeatherForecastResponse(
       double speed
   ) {}
 }
-

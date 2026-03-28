@@ -21,6 +21,7 @@ public record OpenWeatherCurrentResponse(
   ) {}
 
   public record Weather(
+      int id,
       String description
   ) {}
 
@@ -28,4 +29,3 @@ public record OpenWeatherCurrentResponse(
       double speed
   ) {}
 }
-
